@@ -6,7 +6,7 @@ $(document).ready(function(){
 	var token = localStorage.getItem('MANOtokenID');
 
 	// Заполним инстансы, если есть!
-	getInstans(token);
+	getInstances(token);
 
 
 	//по-умолчанию мы показывает Ресурсы!
@@ -19,8 +19,9 @@ $(document).ready(function(){
 
 	//создать compute
 	$("#div_compute").click(function() {
-		
+		mainDiv.innerHTML = '';
 		console.log("compute");
+		createCompute(token);
 
 	});	
 	
@@ -48,7 +49,7 @@ $(document).ready(function(){
 	$("#div_dashboard").click(function() {
 		
 		mainDiv.innerHTML = '';
-		getInstans(token);
+		getInstances(token);
 
 	});	
 
@@ -60,6 +61,163 @@ $(document).ready(function(){
 
 
 
+function createCompute(token){
+	
+	var mainDiv = document.getElementById("main_div");
+	document.getElementById("roadMap").innerHTML = 'EaaS &nbsp &nbsp>&nbsp &nbsp  Создание ресурса';
+	document.getElementById("placeMap").innerHTML = 'Создание ресурса';
+	var services = new Object();
+	services = {
+		"name": "Название сервиса",
+		"image": "Образ операционной системы",
+		"RAM": "Оперативная память",
+		"vCPU": "Количество vCPU",
+		"storage": "Место на диске",
+		"network": "Сеть",
+		"VIM": "Площадка",
+	};
+	
+	generateDivCompute("main_div", services);
+	
+	
+	
+	
+}
+
+
+//****	div_id - "main_div"
+function generateDivCompute(div_id, head)
+{
+let parentElem = document.getElementById(div_id);
+
+//Заголовок Перед таблицей
+	let _p = document.createElement('p');
+	_p.innerHTML = "Создание сервиса compute";
+	_p.classList.add('headerMainDiv');
+	parentElem.appendChild(_p);
+
+
+	var col = 1;
+	var row = Object.keys(head).length*2;
+	let _tbl = document.createElement('table'); //table +
+	_tbl.setAttribute('border', '0');
+	_tbl.setAttribute('width', '45%');
+	for(let i = 0; i < col; i++){
+		for(let y = 0; y < row; y++){
+			let _tr = document.createElement('tr');
+			
+			let _td = document.createElement('td');
+			_td.id = 'TD_'+y;
+			
+			//раскидаем titles сразу.
+			if(y%2 == 0){
+				let num = y/2;
+				let title = '';
+				let i = 0;
+				for(key in head){
+					if(i == num){
+						let _p = document.createElement('p');
+						_p.id = 'P'+y;
+						_p.innerHTML = head[key];
+						_p.classList.add('computeTableP');
+						_td.appendChild(_p);
+					}
+					i++;
+				}
+			}
+			else{
+				let _div = document.createElement('div');
+				_div.id = 'DIV'+y;
+				_td.appendChild(_div)
+			}
+			_tr.appendChild(_td);
+			_tbl.appendChild(_tr);
+		}
+	}
+	parentElem.appendChild(_tbl);
+	
+	
+	let name_div1 = document.getElementById('DIV1');
+	let name_input = document.createElement('input');
+	name_input.id = 'input_name';
+	name_input.classList.add('inputName');
+	name_div1.appendChild(name_input);
+	
+	let name_div3 = document.getElementById('DIV3');
+	let select_image = document.createElement('select');
+	select_image.id = 'select_image';
+	select_image.classList.add('selectStyle');
+	let optionImageUbu18 = document.createElement('option');
+	let optionImageUbu20 = document.createElement('option');
+	optionImageUbu18.innerHTML = 'Ubuntu 18.04';
+	optionImageUbu20.innerHTML = 'Ubuntu 20.04';
+	select_image.appendChild(optionImageUbu18);
+	select_image.appendChild(optionImageUbu20);
+	name_div3.appendChild(select_image);
+
+	let name_div5 = document.getElementById('DIV5');
+	let select_ram = document.createElement('select');
+	select_ram.id = 'select_ram';
+	select_ram.classList.add('selectStyle');
+	let ram1 = document.createElement('option');
+	let ram2 = document.createElement('option');
+	let ram4 = document.createElement('option');
+	let ram5 = document.createElement('option');
+	ram1.innerHTML = '1 Gb';
+	ram2.innerHTML = '2 Gb';
+	ram4.innerHTML = '4 Gb';
+	ram5.innerHTML = '5 Gb';
+	select_ram.appendChild(ram1);
+	select_ram.appendChild(ram2);
+	select_ram.appendChild(ram4);
+	select_ram.appendChild(ram5);
+	name_div5.appendChild(select_ram);	
+
+	let name_div7 = document.getElementById('DIV7');
+	let select_vcpu = document.createElement('select');
+	select_vcpu.id = 'select_vcpu';
+	select_vcpu.classList.add('selectStyle');
+	let vcpu1 = document.createElement('option');
+	let vcpu2 = document.createElement('option');
+	let vcpu4 = document.createElement('option');
+	vcpu1.innerHTML = '1';
+	vcpu2.innerHTML = '2';
+	vcpu4.innerHTML = '4';
+	select_vcpu.appendChild(vcpu1);
+	select_vcpu.appendChild(vcpu2);
+	select_vcpu.appendChild(vcpu4);
+	name_div7.appendChild(select_vcpu);	
+
+	let name_div9 = document.getElementById('DIV9');
+	let select_stor = document.createElement('select');
+	select_stor.id = 'select_stor';
+	select_stor.classList.add('selectStyle');
+	let stor5 = document.createElement('option');
+	let stor10 = document.createElement('option');
+	let stor15 = document.createElement('option');
+	stor5.innerHTML = '5 Gb';
+	stor10.innerHTML = '10 Gb';
+	stor15.innerHTML = '15 Gb';
+	select_stor.appendChild(stor5);
+	select_stor.appendChild(stor10);
+	select_stor.appendChild(stor15);
+	name_div9.appendChild(select_stor);	
+
+	let name_div11 = document.getElementById('DIV11');
+	let select_net = document.createElement('select');
+	select_net.id = 'select_net';
+	select_net.classList.add('selectStyle');
+	let netShared = document.createElement('option');
+	let netPublic = document.createElement('option');
+	netShared.innerHTML = 'Shared';
+	netPublic.innerHTML = 'Public';
+	select_net.appendChild(netShared);
+	select_net.appendChild(netPublic);
+	name_div11.appendChild(select_net);	
+
+
+
+}
 
 
 
@@ -67,7 +225,11 @@ $(document).ready(function(){
 
 
 
-function getInstans(token){
+
+
+
+
+function getInstances(token){
 	
 	var instancesShortArr = new Object();
 	

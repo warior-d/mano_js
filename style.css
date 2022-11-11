@@ -11,6 +11,7 @@
 	font-family: 'MTSmed'; 
 	src: url(/fonts/MTSSans-Medium__W.woff2); 
 }
+
 .login_err{font-family: 'MTSmain'; font-size: 16px; color: red;}
 .forinput {
   margin-top: 10px;
@@ -38,6 +39,10 @@
   border: 2px solid #f0f0f0;
   border-radius: 0.5rem;
 }
+.computeTableP {font-family: 'MTSmain'; font-size: 14px; color: #626C77;}
+.inputName {margin-bottom: 20px; width: 350px; height: 32px; background-color: #F2F3F7; font-family: MTSmain; font-size: 14px; color: #1D2023; border-radius: 5px; border: 1px solid #f0f0f0; padding: 5px; }
+.selectStyle {margin-bottom: 20px; width: 350px; height: 32px; background-color: #F2F3F7; font-family: MTSmain; font-size: 14px; color: #1D2023; border-radius: 5px; border: 1px solid #f0f0f0; padding: 5px; }
+
 .headerMainDiv {font-family: 'MTSmed'; font-size: 24px; color: #1D2023; text-align: left; }
 .headerInfoTable {font-family: 'MTSmed'; font-size: 14px; color: #626C77; border-bottom: 3px solid #f0f0f0; text-align: left; }
 .tdMainDiv {font-family: 'MTSmain'; font-size: 13px; border-bottom: 3px solid #f0f0f0; }
