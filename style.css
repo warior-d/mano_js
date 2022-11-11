@@ -1,0 +1,59 @@
+@font-face {
+	font-family: 'MTSmain'; 
+	src: url(/fonts/MTSSans-Regular__W.woff2); 
+	font-weight: bold;
+}
+@font-face {
+	font-family: 'MTSbold'; 
+	src: url(/fonts/MTSSans-Bold__W.woff2); 
+}
+@font-face {
+	font-family: 'MTSmed'; 
+	src: url(/fonts/MTSSans-Medium__W.woff2); 
+}
+.login_err{font-family: 'MTSmain'; font-size: 16px; color: red;}
+.forinput {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: 80%;
+  height: 70px;
+  padding: 15px;
+  font-family: MTSmed;
+  font-size: 20px;
+  color: #212529;
+  background-color: #fff;
+  border: 2px solid #f0f0f0;
+  border-radius: 0.5rem;
+}
+.forinput:hover {border-color: blue;}
+.forbutton {
+  width: 80%;
+  height: 70px;
+  padding: 15px;
+  font-family: MTSmed;
+  font-size: 20px;
+  color: white;
+  background-color: red;
+  background-clip: padding-box;
+  border: 2px solid #f0f0f0;
+  border-radius: 0.5rem;
+}
+.forbutton:hover {background-color: rgb(200, 5, 15);}
+.puncts {height: 40px;}
+.puncts:hover {background: #f0f0f0; cursor: pointer; height: 100%; border-left: 2px solid red;}
+.punctstest {font-family: 'MTSmed'; font-weight: 400; font-size: 14px; color: #1D2023; vertical-align: middle; padding: 5px;}
+.punctstest:hover {}
+.do {background: #f0f0f0; border: 1px dashed #abab9a; font: 9pt Tahoma; color: #2c2c2c; width: 600px; cursor: pointer}
+.do:hover {background: #d6d6d6;}
+.done {background: #babaad; border: 1px dashed #abab9a; font: 9pt Tahoma; color: #2c2c2c; width: 600px; cursor: pointer}
+.done:hover {background: #a3a391;}
+.not_sel {background: #babaad; font: 9pt Tahoma; color: #2c2c2c; cursor: pointer}
+.selected {font: 9pt Tahoma; color: black; cursor: pointer; position: absolute}
+.beh {display: none;background: #eeeeee; position: absolute; border: 1px ridge #5a5753;}
+.listOfUsers {font: 9pt Tahoma; color: #0071d0; cursor: pointer}
+.listOfUsers:hover {font: 9pt Tahoma; color: #0071d0; cursor: pointer; background: #e1e1e1;}
+.listOfUsers_Bad {font: 9pt Tahoma; color: #ff335c; font-style: italic;}
+.dotable {font: 9pt Tahoma; cursor: pointer;}
+.inputclass {font: 8pt Tahoma; cursor: pointer;}
+.tdright {border-left: 3px solid white;}
+.tdright:hover {background: #f0f0f0; cursor: pointer; border-left: 3px solid red;}
