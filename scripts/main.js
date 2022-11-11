@@ -6,7 +6,7 @@ $(document).ready(function(){
 	var token = localStorage.getItem('MANOtokenID');
 	var mainDiv = document.getElementById("main_div");
 	console.log(token);
-	var instancesShortArr = {};
+	var instancesShortArr = new Object();
 
 	//по-умолчанию мы показывает Ресурсы!
 	var p_road = document.getElementById("roadMap");
@@ -34,6 +34,10 @@ $(document).ready(function(){
 				generateDivDry("main_div");
 			}
 			else{
+				
+				////////////////////////////////// "code": "UNAUTHORIZED", ////////////////////////
+				
+				
 				console.log('сервисов '+data.length+'!');
 				
 				var header = {
@@ -64,7 +68,7 @@ $(document).ready(function(){
 				}
 				
 				console.log(instancesShortArr);
-				generateDivInfo("main_div", header);
+				generateDivInfo("main_div", header, data);
 				
 				
 			}
@@ -72,48 +76,6 @@ $(document).ready(function(){
 	});
 
 
-/*	
-	$("#auth_button").click(function() {
-		
-		var errorDiv = document.getElementById("hidden_txt");
-		errorDiv.innerHTML = '';
-		
-		var username = $('#input_login').val();
-		var pass = $('#input_password').val();
-		if(username == "" || pass == "")
-		{
-			errorDiv.innerHTML = 'Введите логин/пароль!';
-		}
-		else
-		{
-			$.ajax({
-			type:"POST",
-			url: "./core/engine.php",
-			dataType: "json",
-			data: {
-				action: "postAuth",
-				username: username,	
-				pass: pass
-				},
-			success: function(data) 
-				{
-					console.log(data['id']);
-					
-					if(data.hasOwnProperty("code")){
-						errorDiv.innerHTML = data["detail"];
-					}
-					else{
-						localStorage.setItem('MANOtokenID', data["id"]);
-						localStorage.setItem('MANOtokenEXPIRED', data["expires"]);
-						window.open("http://10.0.69.118/index.php");
-					}
-				}
-			});
-		}
-		
-	});
-	
-*/
 });
 
 //****	div_id - "main_div"
@@ -127,7 +89,7 @@ function generateDivDry(div_id)
 }
 
 //****	div_id - "main_div"
-function generateDivInfo(div_id, head)
+function generateDivInfo(div_id, head, data)
 {
 let parentElem = document.getElementById(div_id);
 
@@ -140,7 +102,7 @@ let parentElem = document.getElementById(div_id);
 
 let _tbl = document.createElement('table'); //table +
 _tbl.setAttribute('border', '0');
-_tbl.setAttribute('width', '100%');
+_tbl.setAttribute('width', '90%');
 	// шапка
 	let _tr_header = document.createElement('tr'); //tr +
 	for (key in head) {
@@ -153,13 +115,65 @@ _tbl.setAttribute('width', '100%');
 	}
 _tbl.appendChild(_tr_header);
 
+	//остальная таблица
+	console.log("main table");
+	console.log(data.length);
+	for (var i = 0; i < data.length; i++){
+		console.log( data.length);
+		let _tr = document.createElement('tr'); //tr +
+		
+		for(key in head){
+			console.log(key);
+			if (data[i].hasOwnProperty(key)) {
+				//console.log(data[i]);
+				let _tb = document.createElement('td');
+				
+				
+				var tdData = data[i][key];
+				var tdClass = 'tdMainDiv';
+
+				if(key == 'create-time'){
+					var date = new Date(tdData * 1000);
+					tdData = formatDate(date);
+				}
+				else if(key == 'nsState'){
+					
+					if(tdData == 'BUILDING'){
+						tdData = 'Создается';
+						tdClass = 'tdMainDivStateBuild';
+						_tb.innerHTML = "<img src='../images/prel_yellow.gif' valign='middle' style='margin-bottom: 4px;'/>";
+						
+					}
+					else if(tdData == 'READY'){
+						tdData = 'Активен';
+						tdClass = 'tdMainDivStateReady';
+						_tb.innerHTML = "<img src='../images/ok_icon.png' valign='middle' style='margin-bottom: 4px;'/>";				
+					}
+					else if(tdData == 'TERMINATING'){
+						tdData = 'Удаляется';
+						tdClass = 'tdMainDivStateTerminating';	
+						_tb.innerHTML = "<img src='../images/prel_red.gif' valign='middle' style='margin-bottom: 4px;'/>";
+					}
+				
+				}
+				
+
+				//статусы: BUILDING, READY, TERMINATING, 
+				_tb.innerHTML += ' ' + tdData;
+				_tb.classList.add(tdClass);					
+				
+				_tr.appendChild(_tb);	
+			}
+			
+		}
+		
+		_tbl.appendChild(_tr);
+		
+		
+	}
 	
 	
 	//основное тело т
-	
-	
-	
-	
 	
 	
 /*
@@ -207,4 +221,19 @@ _tbl.appendChild(_tr_header);
 	_tbl.appendChild(_tr_inp);	
 */
 	parentElem.appendChild(_tbl);
+}
+
+
+function formatDate(date) {
+
+  var dd = date.getDate();
+  if (dd < 10) dd = '0' + dd;
+
+  var mm = date.getMonth() + 1;
+  if (mm < 10) mm = '0' + mm;
+
+  var yy = date.getFullYear() % 100;
+  if (yy < 10) yy = '0' + yy;
+
+  return dd + '.' + mm + '.' + yy;
 }

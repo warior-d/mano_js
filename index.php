@@ -7,7 +7,7 @@
 <script type="text/javascript" src="./scripts/main.js"></script>
 	</head> 
 	<body>
-	<table border = '1 px' width="100%" style="margin: 0px;">
+	<table border = '0 px' width="100%" style="margin: 0px;">
 			<tr>
 				<td width="10%" colspan="2">
 					<img src="images/cloud.PNG" alt="Cloud MTS" style="margin: 0px;">
