@@ -33,8 +33,8 @@
 				</td>
 				<td width="90%" colspan="2">
 					<!--<img src="images/zakaz.PNG" alt="Заказ">-->
-					<p style="margin-left:30px; font-family: 'MTSmain'; font-weight: 400; font-size: 14px; color: #BCC3D0; flex: none; order: 0; flex-grow: 0; margin-bottom: 6px;" />  EaaS &nbsp &nbsp>&nbsp &nbsp  Подключение  </p>
-					<p style="margin-left:30px; font-family: 'MTSmain'; font-weight: 400; font-size: 20px; color: #1d2023; margin-top: 2px;" />  Заказ платформы  </p>
+					<p id = "roadMap" style="margin-left:30px; font-family: 'MTSmain'; font-weight: 400; font-size: 14px; color: #BCC3D0; flex: none; order: 0; flex-grow: 0; margin-bottom: 6px;" />    </p>
+					<p id = "placeMap" style="margin-left:30px; font-family: 'MTSmain'; font-weight: 400; font-size: 20px; color: #1d2023; margin-top: 2px;" />    </p>
 				</td>
 				
 
@@ -105,7 +105,7 @@
 				</td>
 				<td width="60%" align="left" valign="top" >
 					<!--<img src="images/zakaz.PNG" alt="Заказ">-->
-					<div id='main_div'></div>
+					<div id='main_div' style="margin-left: 40px; margin-right: 40px; margin-top: 20px"></div>
 				</td>
 				
 				<td width="30%"  valign="top">
