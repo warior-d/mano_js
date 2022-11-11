@@ -1,12 +1,13 @@
 //17.12.2019
 $(document).ready(function(){
 	
-	
+	var mainDiv = document.getElementById("main_div");
 	// сначала - извлечем токен из localStorage!
 	var token = localStorage.getItem('MANOtokenID');
-	var mainDiv = document.getElementById("main_div");
-	console.log(token);
-	var instancesShortArr = new Object();
+
+	// Заполним инстансы, если есть!
+	getInstans(token);
+
 
 	//по-умолчанию мы показывает Ресурсы!
 	var p_road = document.getElementById("roadMap");
@@ -16,7 +17,63 @@ $(document).ready(function(){
 	p_place.innerHTML = 'Мои ресурсы';
 
 
+	//создать compute
+	$("#div_compute").click(function() {
+		
+		console.log("compute");
 
+	});	
+	
+	//создать dbas
+	$("#div_dbaas").click(function() {
+		
+		console.log("dbas");
+
+	});	
+	
+	//создать ws
+	$("#div_ws").click(function() {
+		
+		console.log("web server");
+
+	});	
+
+	//создать test
+	$("#div_test").click(function() {
+		
+		console.log("test");
+
+	});	
+
+	$("#div_dashboard").click(function() {
+		
+		mainDiv.innerHTML = '';
+		getInstans(token);
+
+	});	
+
+
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+function getInstans(token){
+	
+	var instancesShortArr = new Object();
+	
+	document.getElementById("roadMap").innerHTML = 'EaaS &nbsp &nbsp>&nbsp &nbsp  Дашборд';
+	document.getElementById("placeMap").innerHTML = 'Мои ресурсы';
+	
 	$.ajax({
 	type:"POST",
 	url: "./core/engine.php",
@@ -29,7 +86,7 @@ $(document).ready(function(){
 		{
 			
 			if(data.length == 0){
-				console.log('сервисов нет!');
+				//console.log('сервисов нет!');
 				// здесь функция (она же на дашборде), генерящая DIV с предложением забабахать инстансы!
 				generateDivDry("main_div");
 			}
@@ -38,7 +95,7 @@ $(document).ready(function(){
 				////////////////////////////////// "code": "UNAUTHORIZED", ////////////////////////
 				
 				
-				console.log('сервисов '+data.length+'!');
+				//console.log('сервисов '+data.length+'!');
 				
 				var header = {
 					"_id": "ID сервиса",
@@ -67,16 +124,18 @@ $(document).ready(function(){
 				
 				}
 				
-				console.log(instancesShortArr);
+				//console.log(instancesShortArr);
 				generateDivInfo("main_div", header, data);
 				
 				
 			}
 		}
 	});
+}
 
 
-});
+
+
 
 //****	div_id - "main_div"
 function generateDivDry(div_id)
@@ -116,14 +175,14 @@ _tbl.setAttribute('width', '90%');
 _tbl.appendChild(_tr_header);
 
 	//остальная таблица
-	console.log("main table");
-	console.log(data.length);
+	//console.log("main table");
+	//console.log(data.length);
 	for (var i = 0; i < data.length; i++){
-		console.log( data.length);
+		//console.log( data.length);
 		let _tr = document.createElement('tr'); //tr +
 		
 		for(key in head){
-			console.log(key);
+			//console.log(key);
 			if (data[i].hasOwnProperty(key)) {
 				//console.log(data[i]);
 				let _tb = document.createElement('td');
