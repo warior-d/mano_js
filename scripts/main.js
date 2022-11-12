@@ -22,6 +22,8 @@ $(document).ready(function(){
 		mainDiv.innerHTML = '';
 		console.log("compute");
 		createCompute(token);
+		
+		// createCompute (getVIMS) ->  generateDivCompute 
 
 	});	
 	
@@ -70,23 +72,72 @@ function createCompute(token){
 	services = {
 		"name": "Название сервиса",
 		"image": "Образ операционной системы",
-		"RAM": "Оперативная память",
+		"RAM": "Оперативная память, Gb",
 		"vCPU": "Количество vCPU",
-		"storage": "Место на диске",
+		"storage": "Место на диске, Gb",
 		"network": "Сеть",
 		"VIM": "Площадка",
 	};
 	
-	generateDivCompute("main_div", services);
+	let vims = new Array();
+	vims = getVIMS(token);	
+	//console.log(vims);
+	//console.log(vims.length);
+	generateDivCompute("main_div", services, vims);
 	
 	
-	
+
 	
 }
 
 
+// кошерное наполнение Object!!!
+function getVIMS(token){
+	
+	var vims = new Array();
+	//var vims = {};
+	var needParams = ["vim_url", "name", "vim_type"];
+	
+	$.ajax({
+	type:"POST",
+	url: "./core/engine.php",
+	dataType: "json",
+	data: {
+		action: "getVims",
+		token: token
+		},
+	success: function(data) 
+		{
+			//console.log(data);
+			if(data.length>=1){
+				for(let i=0; i < data.length;i++){
+					var arr = {};
+					for(key in data[i]){
+						if(needParams.indexOf(key) != -1){
+							arr[key] = data[i][key];
+						}
+					}
+					vims[i] = arr;
+				}
+			}
+			else{
+				console.log("getVIMS error!!!");
+			}
+			console.log(vims.length);
+			
+		}
+	});
+
+console.log(vims.length);
+return vims;
+}
+	
+
+
+
+
 //****	div_id - "main_div"
-function generateDivCompute(div_id, head)
+function generateDivCompute(div_id, head, vimList)
 {
 let parentElem = document.getElementById(div_id);
 
@@ -163,10 +214,10 @@ let parentElem = document.getElementById(div_id);
 	let ram2 = document.createElement('option');
 	let ram4 = document.createElement('option');
 	let ram5 = document.createElement('option');
-	ram1.innerHTML = '1 Gb';
-	ram2.innerHTML = '2 Gb';
-	ram4.innerHTML = '4 Gb';
-	ram5.innerHTML = '5 Gb';
+	ram1.innerHTML = '1';
+	ram2.innerHTML = '2';
+	ram4.innerHTML = '4';
+	ram5.innerHTML = '5';
 	select_ram.appendChild(ram1);
 	select_ram.appendChild(ram2);
 	select_ram.appendChild(ram4);
@@ -195,9 +246,9 @@ let parentElem = document.getElementById(div_id);
 	let stor5 = document.createElement('option');
 	let stor10 = document.createElement('option');
 	let stor15 = document.createElement('option');
-	stor5.innerHTML = '5 Gb';
-	stor10.innerHTML = '10 Gb';
-	stor15.innerHTML = '15 Gb';
+	stor5.innerHTML = '5';
+	stor10.innerHTML = '10';
+	stor15.innerHTML = '15';
 	select_stor.appendChild(stor5);
 	select_stor.appendChild(stor10);
 	select_stor.appendChild(stor15);
@@ -215,6 +266,33 @@ let parentElem = document.getElementById(div_id);
 	select_net.appendChild(netPublic);
 	name_div11.appendChild(select_net);	
 
+
+
+
+	let name_div13 = document.getElementById('DIV13');
+	let _select_vim = document.createElement('select');
+	_select_vim.id = 'select_vim';
+	_select_vim.classList.add('selectStyle');
+	//console.log(vimList.length);
+	
+	for(let i=0; i < vimList.length; i++){
+		console.log('22222');
+		if(vimList[i]["vim_type" != "openstack"]){
+			continue;
+		}
+		else{
+			//console.log(vimList[i]);
+			for(key in vimList[i]){
+				if(key == 'name'){
+					let _option = document.createElement('option');
+					_option.id = 'OPT_' + vimList[i][key];
+					_option.innerHTML = vimList[i][key];
+					_select_vim.appendChild(_option);
+				}
+			}
+			name_div13.appendChild(_select_vim);	
+		}
+	}
 
 
 }
