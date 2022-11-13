@@ -7,6 +7,7 @@ define('GET_VIMS','/admin/v1/vim_accounts');
 define('POST_VNFD','/vnfpkgm/v1/vnf_packages_content');
 define('POST_NSD','/nsd/v1/ns_descriptors_content');
 define('POST_NS','/nslcm/v1/ns_instances_content');
+define('DELETE_NS','/nslcm/v1/ns_instances_content/');
 //
 
  if(!empty($_REQUEST)){
@@ -123,7 +124,24 @@ function createNS()
 
 
 
+function deleteInstance()
+{
+	$token = $_REQUEST['token'];
+	$ns_id = $_REQUEST['instance_id'];
 
+	$ch = curl_init(API_MANO_BASE.DELETE_NS.$ns_id);
+	curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8',
+	'Accept: application/json; charset=utf-8', 'Connection: keep-alive', 'Authorization: Bearer '.$token,
+	'Content-Length: '.mb_strlen($data)));
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($ch, CURLOPT_HEADER, "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)");
+	$res = curl_exec($ch);
+	curl_close($ch);
+	#print_r($res);
+	echo $res;
+}
 
 
 

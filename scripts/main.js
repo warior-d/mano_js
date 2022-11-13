@@ -419,6 +419,9 @@ function generateDivCompute(div_id, head, token)
 
 
 function getInstances(token){
+	
+	var grafana_url = 'http://10.0.69.115:3000/d/';
+	
 	document.getElementById("main_div").innerHTML = '';
 	var instancesShortArr = new Object();
 	
@@ -453,6 +456,7 @@ function getInstances(token){
 					'name': "Название",
 					"nsState": "Статус",
 					"create-time": "Дата создания",
+					"revision": "Действия"
 				};
 				
 				//console.log(data);
@@ -479,14 +483,44 @@ function getInstances(token){
 				generateDivInfo("main_div", header, data);
 				
 				
+				
+				
+											///////////////////////////////////////    удалить инстанс!!!!
+				$(document).on('click','img[id^="TRASH_IMG_"]', function(data)
+				{
+					var question = confirm('Вы действиельно хотите отключить инстанс?');
+					
+					if(question){
+						ns_id_id = this.id;
+						console.log(this.id);
+						ns_id = ns_id_id.replace('TRASH_IMG_', '');
+						console.log(ns_id);
+						
+						$.ajax({
+						type:"POST",
+						url: "./core/engine.php",
+						dataType: "json",
+						data: {
+							action: "deleteInstance",
+							token: token,
+							instance_id: ns_id
+							},
+						success: function(data) 
+							{						
+								console.log(data);
+								location.reload();
+							}
+						});
+						
+						
+						
+					}
+					
+				});
 			}
 		}
 	});
 }
-
-
-
-
 
 
 
@@ -503,13 +537,14 @@ function generateDivDry(div_id)
 
 
 
-
-
 //****	div_id - "main_div"
 function generateDivInfo(div_id, head, data)
 {
+	var grafana_url = 'http://10.0.69.115:3000/d/';
+	
+	
 let parentElem = document.getElementById(div_id);
-
+console.log(data);
 //Заголовок Перед таблицей
 	let _p = document.createElement('p');
 	_p.innerHTML = "Ресурсы";
@@ -573,15 +608,21 @@ _tbl.appendChild(_tr_header);
 					}
 				
 				}
-				
 
 				//статусы: BUILDING, READY, TERMINATING, 
 				_tb.innerHTML += ' ' + tdData;
+				
+				//костыль для действий!!!!
+				if(key == 'revision'){
+					url_to_metric = grafana_url + data[i]['_id'];
+					
+					_tb.innerHTML = "<a href="+url_to_metric+"><img src='../images/info.png' valign='middle' alt='Метрики' style='margin-bottom: 4px;'/></a> <img id = "+ 'TRASH_IMG_' + data[i]['_id'] +" src='../images/trash.png' valign='middle' alt='Отключить инстанс' style='cursor: pointer; margin-bottom: 4px;'/>";
+				}
+				
 				_tb.classList.add(tdClass);					
 				
 				_tr.appendChild(_tb);	
 			}
-			
 		}
 		
 		_tbl.appendChild(_tr);
