@@ -49,10 +49,7 @@ $(document).ready(function(){
 	});	
 
 	$("#div_dashboard").click(function() {
-		
-		mainDiv.innerHTML = '';
 		getInstances(token);
-
 	});	
 
 
@@ -94,7 +91,7 @@ function createCompute(token){
 function generateDivCompute(div_id, head, token)
 {
 	var vims = new Array();
-	var needParams = ["vim_url", "name", "vim_type"];
+	var needParams = ["vim_url", "name", "vim_type", "_id"];
 	
 	$.ajax({
 	type:"POST",
@@ -125,7 +122,7 @@ function generateDivCompute(div_id, head, token)
 				console.log("getVIMS error!!!");
 			}
 			
-			
+			console.log(vims);
 			let parentElem = document.getElementById(div_id);
 
 
@@ -247,8 +244,8 @@ function generateDivCompute(div_id, head, token)
 			select_net.classList.add('selectStyle');
 			let netShared = document.createElement('option');
 			let netPublic = document.createElement('option');
-			netShared.innerHTML = 'Shared';
-			netPublic.innerHTML = 'Public';
+			netShared.innerHTML = 'shared';
+			netPublic.innerHTML = 'public';
 			select_net.appendChild(netShared);
 			select_net.appendChild(netPublic);
 			name_div11.appendChild(select_net);	
@@ -273,25 +270,23 @@ function generateDivCompute(div_id, head, token)
 						if(key == 'name'){
 							let _option = document.createElement('option');
 							_option.id = 'OPT_' + vims[i][key];
-							_option.innerHTML = vims[i][key];
+						_option.innerHTML = vims[i][key]; // + '(' + vims[i]['vim_url'] + ')'
 							_select_vim.appendChild(_option);
 						}
 					}
 					name_div13.appendChild(_select_vim);	
 				}
 			}
-			
-		// обрежем пробелы
-		$("#input_name").keyup(function(data)
-		{
-			var curStr = $('#input_name').val();
-			if(curStr.trim() !=  curStr)
+		
+			$("#input_name").keyup(function(data)
 			{
-				document.getElementById("input_name").value = curStr.trim();
-			}
-		});
+				var curStr = $('#input_name').val();
+				if(curStr.trim() !=  curStr)
+				{
+					document.getElementById("input_name").value = curStr.trim();
+				}
+			});
 
-			
 			let _butt_exec = document.createElement('button');
 			_butt_exec.id = 'execute_button';
 			_butt_exec.innerHTML = 'Создать';
@@ -301,7 +296,103 @@ function generateDivCompute(div_id, head, token)
 			
 			//var  = document.getElementById("main_div");
 			$("#execute_button").click(function() {
-				console.log("jejejeje");
+				let instanceName = $('#input_name').val();
+
+				let imageName = $('#select_image').val();
+
+				let qntRAM = $('#select_ram').val();
+
+				let qntvCPU = $('#select_vcpu').val();
+
+				let qntStorage = $('#select_stor').val();
+
+				let networkName = $('#select_net').val();
+
+				let vimName = $('#select_vim').val();
+				
+				let vim_id = '';
+				
+				for(var i =0; i < vims.length; i++){
+					
+					if(vims[i]['name'] == vimName){
+						vim_id = vims[i]['_id'];
+					}
+					
+				}
+				
+				if(instanceName != ''){
+					
+					//////////////////////////////////////////// создадим VNFd
+					$.ajax({
+						type:"POST",
+						url: "./core/engine.php",
+						dataType: "json",
+						data: {
+							action: "createVNFD",
+							name: instanceName,
+							token: token,
+							imageID: imageName,
+							ram: qntRAM,
+							vCPU: qntvCPU,
+							storage: qntStorage,
+							network: networkName,
+							vim: vim_id
+							},
+						success: function(data) 
+							{
+								
+								///////////////////////////////// создадим NSd
+								$.ajax({
+									type:"POST",
+									url: "./core/engine.php",
+									dataType: "json",
+									data: {
+										action: "createNSD",
+										name: instanceName,
+										token: token,
+										imageID: imageName,
+										ram: qntRAM,
+										vCPU: qntvCPU,
+										storage: qntStorage,
+										network: networkName,
+										vim: vim_id
+										},
+									success: function(data) 
+										{
+											console.log(data);
+											let nsd_id = '';
+											nsd_id = data['id'];
+								///////////////////////////////// создадим NS !!!!!!!
+											$.ajax({
+												type:"POST",
+												url: "./core/engine.php",
+												dataType: "json",
+												data: {
+													action: "createNS",
+													name: instanceName,
+													token: token,
+													imageID: imageName,
+													ram: qntRAM,
+													vCPU: qntvCPU,
+													storage: qntStorage,
+													network: networkName,
+													vim: vim_id,
+													ns_id: nsd_id
+													},
+												success: function(data) 
+													{
+														console.log(data);
+														getInstances(token);
+													}
+											});
+										}
+								});
+								
+								
+							}
+					});
+					
+				}
 			});
 		}
 });
@@ -328,7 +419,7 @@ function generateDivCompute(div_id, head, token)
 
 
 function getInstances(token){
-	
+	document.getElementById("main_div").innerHTML = '';
 	var instancesShortArr = new Object();
 	
 	document.getElementById("roadMap").innerHTML = 'EaaS &nbsp &nbsp>&nbsp &nbsp  Дашборд';

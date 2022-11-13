@@ -4,6 +4,10 @@ define('API_MANO_BASE','http://10.0.69.115/osm');
 define('POST_TAKE_TOKEN','/admin/v1/tokens');
 define('GET_RUNNING_INSTANCES','/nslcm/v1/ns_instances');
 define('GET_VIMS','/admin/v1/vim_accounts');
+define('POST_VNFD','/vnfpkgm/v1/vnf_packages_content');
+define('POST_NSD','/nsd/v1/ns_descriptors_content');
+define('POST_NS','/nslcm/v1/ns_instances_content');
+//
 
  if(!empty($_REQUEST)){
 	if(function_exists($_REQUEST['action']))
@@ -16,6 +20,111 @@ define('GET_VIMS','/admin/v1/vim_accounts');
 #
 #	Надо в каждом запросе предусмотреть возврат UNATHORIZE
 #
+
+
+function createVNFD()
+{
+	include "jsons.php";
+	
+	$token = $_REQUEST['token'];
+	$name = $_REQUEST['name']; 
+	$image = $_REQUEST['imageID'];
+	$ram = $_REQUEST['ram'];
+	$vcpu = $_REQUEST['vCPU'];
+	$storage = $_REQUEST['storage'];
+	$network = $_REQUEST['network'];
+	$vim = $_REQUEST['vim'];
+	$cloud_config = '';
+
+	$vnfd_name = $name.'_vnf';
+    $vnfd = getVNFd($vnfd_name, $image, $ram, $vcpu, $storage);
+
+	$ch = curl_init(API_MANO_BASE.POST_VNFD);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8',
+	'Accept: application/json; charset=utf-8', 'Authorization: Bearer '.$token));
+	curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $vnfd); 
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($ch, CURLOPT_HEADER, "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)");
+	$id_vnfd = curl_exec($ch);
+	$status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+	curl_close($ch);
+	echo $id_vnfd;
+}
+
+
+
+function createNSD()
+{
+	include "jsons.php";
+	
+	$token = $_REQUEST['token'];
+	$name = $_REQUEST['name']; 
+	$image = $_REQUEST['imageID'];
+	$ram = $_REQUEST['ram'];
+	$vcpu = $_REQUEST['vCPU'];
+	$storage = $_REQUEST['storage'];
+	$network = $_REQUEST['network'];
+	$vim = $_REQUEST['vim'];
+	$cloud_config = '';
+
+	$vnfd_name = $name.'_vnf';
+	$nsd_name = $name.'_ns';
+	$nsd = getNSd($nsd_name, $vnfd_name, $network);	
+
+	$ch = curl_init(API_MANO_BASE.POST_NSD);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8',
+	'Accept: application/json; charset=utf-8', 'Authorization: Bearer '.$token));
+	curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $nsd); 
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($ch, CURLOPT_HEADER, "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)");
+	$id_nsd = curl_exec($ch);
+	$status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+	curl_close($ch);
+	echo $id_nsd;
+}
+
+
+
+function createNS()
+{
+	include "jsons.php";
+	
+	$token = $_REQUEST['token'];
+	$name = $_REQUEST['name']; 
+	$image = $_REQUEST['imageID'];
+	$ram = $_REQUEST['ram'];
+	$vcpu = $_REQUEST['vCPU'];
+	$storage = $_REQUEST['storage'];
+	$network = $_REQUEST['network'];
+	$vim = $_REQUEST['vim'];
+	$cloud_config = '';
+	$ns_id = $_REQUEST['ns_id'];
+
+	$nsd = getNetServ($name, $name, $ns_id, $vim);	
+
+	$ch = curl_init(API_MANO_BASE.POST_NS);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8',
+	'Accept: application/json; charset=utf-8', 'Authorization: Bearer '.$token));
+	curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $nsd); 
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($ch, CURLOPT_HEADER, "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)");
+	$id_nsd = curl_exec($ch);
+	$status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+	curl_close($ch);
+	echo $id_nsd;
+}
+
+
+
+
+
+
 
 
 
