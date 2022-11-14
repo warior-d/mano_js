@@ -104,8 +104,9 @@ function createNS()
 	$vim = $_REQUEST['vim'];
 	$cloud_config = '';
 	$ns_id = $_REQUEST['ns_id'];
+	$instanceType = $_REQUEST['instanceType'];
 
-	$nsd = getNetServ($name, $name, $ns_id, $vim);	
+	$nsd = getNetServ($name, $instanceType, $ns_id, $vim);	
 
 	$ch = curl_init(API_MANO_BASE.POST_NS);
 	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8',
