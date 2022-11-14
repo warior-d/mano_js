@@ -194,7 +194,7 @@ function getInstancesAndVims()
 						if(($k == '_id') && $v == $value){
 							
 								$decoded_json_nss[$i]["datacenter_name"] = $arrVims[$y]["name"];
-
+								$decoded_json_nss[$i]["vim_resources"] = $arrVims[$y]["resources"];
 						}
 					}
 				}
