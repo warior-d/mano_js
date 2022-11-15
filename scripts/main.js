@@ -20,11 +20,8 @@ $(document).ready(function(){
 	//создать compute
 	$("#div_compute").click(function() {
 		
-		console.log("compute");
 		createCompute(token);
 		
-		// createCompute (getVIMS) ->  generateDivCompute 
-
 	});	
 	
 	//создать dbas
@@ -36,8 +33,8 @@ $(document).ready(function(){
 	
 	//создать ws
 	$("#div_ws").click(function() {
+		
 		createWSandDBaaS(token);
-		console.log("web server");
 
 	});	
 
@@ -126,7 +123,7 @@ function generateDivWSDB(div_id, head, token)
 			var col = 1;
 			var row = Object.keys(head).length*2;
 			let _tbl = document.createElement('table'); //table +
-			_tbl.setAttribute('border', '1');
+			_tbl.setAttribute('border', '0');
 			_tbl.setAttribute('width', '45%');
 			for(let i = 0; i < col; i++){
 				for(let y = 0; y < row; y++){
@@ -165,7 +162,7 @@ function generateDivWSDB(div_id, head, token)
 			
 			let name_div1 = document.getElementById('DIV_WS_1');
 			let name_input = document.createElement('input');
-			name_input.id = 'input_name';
+			name_input.id = 'input_name_wsdb';
 			name_input.classList.add('inputName');
 			name_div1.appendChild(name_input);			
 			
@@ -173,7 +170,7 @@ function generateDivWSDB(div_id, head, token)
 			
 			let name_div3 = document.getElementById('DIV_WS_3');
 			let select_image = document.createElement('select');
-			select_image.id = 'select_image';
+			select_image.id = 'select_image_ws';
 			select_image.classList.add('selectStyle');
 			let optionImageUbu18 = document.createElement('option');
 			let optionImageUbu20 = document.createElement('option');
@@ -182,200 +179,11 @@ function generateDivWSDB(div_id, head, token)
 			select_image.appendChild(optionImageUbu18);
 			select_image.appendChild(optionImageUbu20);
 			name_div3.appendChild(select_image);		
-			
-			
-			let name_div5 = document.getElementById('DIV_WS_5');
-			name_div5.classList.add('divBottomMargin');
-			
-				let _ws_div_tbl = document.createElement('table');
-				_ws_div_tbl.setAttribute('width', '100%');
-				let _ws_div_tr = document.createElement('tr');
-				let _ws_div_td1 = document.createElement('td');
-				
-					let name_div5_1 = document.createElement('div');
-					name_div5_1.id = 'DIV_WS_R_1';
-					name_div5_1.setAttribute('align', 'center');
-					name_div5_1.classList.add('divResourseWS');
-					
-						let div5_1_tbl = document.createElement('table');
-						let div5_1_tr = document.createElement('tr');
-						let div5_1_td = document.createElement('td');
-						let p_div5_1 = document.createElement('p');
-						p_div5_1.classList.add('pWSdiv');
-						p_div5_1.innerHTML = 'SMALL';
-						div5_1_td.appendChild(p_div5_1);
-						div5_1_tr.appendChild(div5_1_td);
-						div5_1_tbl.appendChild(div5_1_tr);
-
-					
-						let div5_2_tr = document.createElement('tr');
-						let div5_2_td = document.createElement('td');
-						let p_div5_2 = document.createElement('p');
-						p_div5_2.classList.add('pWSdiv1');
-						p_div5_2.innerHTML = 'vCPU: 1 шт';
-						div5_2_td.appendChild(p_div5_2);
-						div5_2_tr.appendChild(div5_2_td);
-						div5_1_tbl.appendChild(div5_2_tr);
-					
-					
-						let div5_3_tr = document.createElement('tr');
-						let div5_3_td = document.createElement('td');
-						let p_div5_3 = document.createElement('p');
-						p_div5_3.classList.add('pWSdiv1');
-						p_div5_3.innerHTML = 'RAM: 1 GB';
-						div5_3_td.appendChild(p_div5_3);
-						div5_3_tr.appendChild(div5_3_td);
-						div5_1_tbl.appendChild(div5_3_tr);
-						
-						let div5_4_tr = document.createElement('tr');
-						let div5_4_td = document.createElement('td');
-						let p_div5_4 = document.createElement('p');
-						p_div5_4.classList.add('pWSdiv1');
-						p_div5_4.innerHTML = 'SSD: 5 GB';
-						div5_4_td.appendChild(p_div5_4);
-						div5_4_tr.appendChild(div5_4_td);
-						div5_1_tbl.appendChild(div5_4_tr);						
-
 		
-						name_div5_1.appendChild(div5_1_tbl);					
-					_ws_div_td1.appendChild(name_div5_1);
-					
-					
-					
-				let _ws_div_td2 = document.createElement('td');
-				
-					let name_div5_2 = document.createElement('div');
-					name_div5_2.id = 'DIV_WS_R_2';
-					name_div5_2.setAttribute('align', 'center');
-					name_div5_2.classList.add('divResourseWS');
-					
-						let div5_12_tbl = document.createElement('table');
-						let div5_12_tr = document.createElement('tr');
-						let div5_12_td = document.createElement('td');
-						let p_div5_12 = document.createElement('p');
-						p_div5_12.classList.add('pWSdiv');
-						p_div5_12.innerHTML = 'MEDIUM';
-						div5_12_td.appendChild(p_div5_12);
-						div5_12_tr.appendChild(div5_12_td);
-						div5_12_tbl.appendChild(div5_12_tr);
-
-					
-						let div5_22_tr = document.createElement('tr');
-						let div5_22_td = document.createElement('td');
-						let p_div5_22 = document.createElement('p');
-						p_div5_22.classList.add('pWSdiv1');
-						p_div5_22.innerHTML = 'vCPU: 2 шт';
-						div5_22_td.appendChild(p_div5_22);
-						div5_22_tr.appendChild(div5_22_td);
-						div5_12_tbl.appendChild(div5_22_tr);
-					
-					
-						let div5_23_tr = document.createElement('tr');
-						let div5_23_td = document.createElement('td');
-						let p_div5_23 = document.createElement('p');
-						p_div5_23.classList.add('pWSdiv1');
-						p_div5_23.innerHTML = 'RAM: 2 GB';
-						div5_23_td.appendChild(p_div5_23);
-						div5_23_tr.appendChild(div5_23_td);
-						div5_12_tbl.appendChild(div5_23_tr);
-						
-						let div5_24_tr = document.createElement('tr');
-						let div5_24_td = document.createElement('td');
-						let p_div5_24 = document.createElement('p');
-						p_div5_24.classList.add('pWSdiv1');
-						p_div5_24.innerHTML = 'SSD: 10 GB';
-						div5_24_td.appendChild(p_div5_24);
-						div5_24_tr.appendChild(div5_24_td);
-						div5_12_tbl.appendChild(div5_24_tr);						
-
-		
-						name_div5_2.appendChild(div5_12_tbl);					
-					_ws_div_td2.appendChild(name_div5_2);
-				
-				
-				
-				
-				let _ws_div_td3 = document.createElement('td');
-
-					let name_div5_3 = document.createElement('div');
-					name_div5_3.id = 'DIV_WS_R_3';
-					name_div5_3.setAttribute('align', 'center');
-					name_div5_3.classList.add('divResourseWS');
-					
-						let div5_32_tbl = document.createElement('table');
-						let div5_32_tr = document.createElement('tr');
-						let div5_32_td = document.createElement('td');
-						let p_div5_13 = document.createElement('p');
-						p_div5_13.classList.add('pWSdiv');
-						p_div5_13.innerHTML = 'LARGE';
-						div5_32_td.appendChild(p_div5_13);
-						div5_32_tr.appendChild(div5_32_td);
-						div5_32_tbl.appendChild(div5_32_tr);
-
-					
-						let div5_35_tr = document.createElement('tr');
-						let div5_35_td = document.createElement('td');
-						let p_div5_35 = document.createElement('p');
-						p_div5_35.classList.add('pWSdiv1');
-						p_div5_35.innerHTML = 'vCPU: 4 шт';
-						div5_35_td.appendChild(p_div5_35);
-						div5_35_tr.appendChild(div5_35_td);
-						div5_32_tbl.appendChild(div5_35_tr);
-					
-					
-						let div5_33_tr = document.createElement('tr');
-						let div5_33_td = document.createElement('td');
-						let p_div5_33 = document.createElement('p');
-						p_div5_33.classList.add('pWSdiv1');
-						p_div5_33.innerHTML = 'RAM: 8 GB';
-						div5_33_td.appendChild(p_div5_33);
-						div5_33_tr.appendChild(div5_33_td);
-						div5_32_tbl.appendChild(div5_33_tr);
-						
-						let div5_34_tr = document.createElement('tr');
-						let div5_34_td = document.createElement('td');
-						let p_div5_34 = document.createElement('p');
-						p_div5_34.classList.add('pWSdiv1');
-						p_div5_34.innerHTML = 'SSD: 15 GB';
-						div5_34_td.appendChild(p_div5_34);
-						div5_34_tr.appendChild(div5_34_td);
-						div5_32_tbl.appendChild(div5_34_tr);						
-
-		
-						name_div5_3.appendChild(div5_32_tbl);					
-					_ws_div_td3.appendChild(name_div5_3);
-
-				
-				_ws_div_tr.appendChild(_ws_div_td1);
-				_ws_div_tr.appendChild(_ws_div_td2);
-				_ws_div_tr.appendChild(_ws_div_td3);
-				_ws_div_tbl.appendChild(_ws_div_tr);
-				
-			name_div5.appendChild(_ws_div_tbl);
 
 
-			let resoursesWS = '';
-			$(document).on('click','div[id^="DIV_WS_R_"]', function(data)
-				{
-					document.getElementById("DIV_WS_R_1").classList.remove('divResourseWSclk');
-					document.getElementById("DIV_WS_R_2").classList.remove('divResourseWSclk');
-					document.getElementById("DIV_WS_R_3").classList.remove('divResourseWSclk');
-						
-					document.getElementById(this.id).classList.add('divResourseWSclk');
-					resoursesWS = this.id;
-				});	
 
-
-			let name_div7 = document.getElementById('DIV_WS_7');
-			let select_image_db = document.createElement('select');
-			select_image_db.id = 'select_image';
-			select_image_db.classList.add('selectStyle');
-			let optionImagePostgreSQL = document.createElement('option');
-			optionImagePostgreSQL.innerHTML = 'PostgreSQL';
-			select_image_db.appendChild(optionImagePostgreSQL);
-			name_div7.appendChild(select_image_db);
-
-let paramsDB = [{
+let paramsWS = [{
   "SMALL": {
     "vCPU": "1 core",
     "RAM": "1 GB",
@@ -391,9 +199,100 @@ let paramsDB = [{
     "RAM": "8 GB",
     "SSD": "15 GB"
   }
-}];			
-			
-	console.log(paramsDB.length);	
+}];	
+
+			let name_div5 = document.getElementById('DIV_WS_5');
+			name_div5.classList.add('divBottomMargin');
+			for(let i = 0; i < paramsWS.length; i++){
+
+				let tbl_res = document.createElement('table');
+				tbl_res.setAttribute('width','100%');
+				let tbl_res_tr = document.createElement('tr');
+				let qnt = 1;
+				for(key in paramsWS[i]){
+					
+					let tbl_res_tr_td = document.createElement('td'); 
+					let tbl_res_tr_td_div = document.createElement('div'); 
+					tbl_res_tr_td_div.id = 'DIV_WS_RWS_' + qnt;
+					tbl_res_tr_td_div.setAttribute('align', 'center');
+					tbl_res_tr_td_div.classList.add('divResourseWS');
+					let div_resDB_tbl = document.createElement('table');
+					let key_arr_tr_hdr = document.createElement('tr');
+					let key_arr_td_hdr = document.createElement('td');
+					let key_arr_p_hdr = document.createElement('p');
+						key_arr_p_hdr.classList.add('pWSdiv');
+						key_arr_p_hdr.innerHTML = key;	
+					key_arr_td_hdr.appendChild(key_arr_p_hdr);
+					key_arr_tr_hdr.appendChild(key_arr_td_hdr);
+					div_resDB_tbl.appendChild(key_arr_tr_hdr);
+					qnt_in = 1;
+					for(key_arr in paramsWS[i][key]){
+
+						let key_arr_tr = document.createElement('tr');
+						let key_arr_td = document.createElement('td');
+						let key_arr_p = document.createElement('p');
+						
+							key_arr_p.classList.add('pWSdiv1');
+							let p_txt = key_arr + " : " + paramsWS[i][key][key_arr];
+							key_arr_p.innerHTML = p_txt;
+
+						key_arr_td.appendChild(key_arr_p);
+						key_arr_tr.appendChild(key_arr_td);
+						
+						div_resDB_tbl.appendChild(key_arr_tr);
+						
+						qnt_in = qnt_in + 1;
+					}
+					
+					tbl_res_tr_td_div.appendChild(div_resDB_tbl);
+					tbl_res_tr_td.appendChild(tbl_res_tr_td_div);
+					tbl_res_tr.appendChild(tbl_res_tr_td);
+					tbl_res.appendChild(tbl_res_tr);
+					name_div5.appendChild(tbl_res);
+					qnt = qnt + 1;
+				}
+			}
+
+			let resoursesWS = '';
+			$(document).on('click','div[id^="DIV_WS_RWS_"]', function(data)
+				{
+					document.getElementById("DIV_WS_RWS_1").classList.remove('divResourseWSclk');
+					document.getElementById("DIV_WS_RWS_2").classList.remove('divResourseWSclk');
+					document.getElementById("DIV_WS_RWS_3").classList.remove('divResourseWSclk');
+						
+					document.getElementById(this.id).classList.add('divResourseWSclk');
+					resoursesWS = this.id;
+				});	
+
+
+			let name_div7 = document.getElementById('DIV_WS_7');
+			let select_image_db = document.createElement('select');
+			select_image_db.id = 'select_image';
+			select_image_db.classList.add('selectStyle');
+			let optionImagePostgreSQL = document.createElement('option');
+			optionImagePostgreSQL.innerHTML = 'PostgreSQL';
+			select_image_db.appendChild(optionImagePostgreSQL);
+			name_div7.appendChild(select_image_db);
+
+
+
+let paramsDB = [{
+  "SMALL": {
+    "vCPU": "1 core",
+    "RAM": "1 GB",
+    "SSD": "10 GB"
+  },
+  "MEDIUM": {
+    "vCPU": "2 core",
+    "RAM": "2 GB",
+    "SSD": "10 GB"
+  },
+  "LARGE": {
+    "vCPU": "4 core",
+    "RAM": "8 GB",
+    "SSD": "10 GB"
+  }
+}];				
 
 
 			let name_div9 = document.getElementById('DIV_WS_9');
@@ -448,7 +347,68 @@ let paramsDB = [{
 				}
 			}
 			
+			let resoursesDB = '';
+			$(document).on('click','div[id^="DIV_WS_RDB_"]', function(data)
+				{
+					document.getElementById("DIV_WS_RDB_1").classList.remove('divResourseWSclk');
+					document.getElementById("DIV_WS_RDB_2").classList.remove('divResourseWSclk');
+					document.getElementById("DIV_WS_RDB_3").classList.remove('divResourseWSclk');
+						
+					document.getElementById(this.id).classList.add('divResourseWSclk');
+					resoursesDB = this.id;
+				});	
 
+
+			let name_div11 = document.getElementById('DIV_WS_11');
+			let select_net = document.createElement('select');
+			select_net.id = 'select_net_ws';
+			select_net.classList.add('selectStyle');
+			let netShared = document.createElement('option');
+			let netPublic = document.createElement('option');
+			netShared.innerHTML = 'shared';
+			netPublic.innerHTML = 'public';
+			select_net.appendChild(netShared);
+			select_net.appendChild(netPublic);
+			name_div11.appendChild(select_net);	
+
+			let name_div13 = document.getElementById('DIV_WS_13');
+			let _select_vim = document.createElement('select');
+			_select_vim.id = 'select_vim_ws';
+			_select_vim.classList.add('selectStyle');
+			
+			for(let i=0; i < vims.length; i++){
+
+				if(vims[i]["vim_type"] != "openstack"){
+					continue;
+				}
+				else{
+
+					for(key in vims[i]){
+						if(key == 'name'){
+							let _option = document.createElement('option');
+							_option.id = 'OPT_WSDB' + vims[i][key];
+						_option.innerHTML = vims[i][key]; // + '(' + vims[i]['vim_url'] + ')'
+							_select_vim.appendChild(_option);
+						}
+					}
+					name_div13.appendChild(_select_vim);	
+				}
+			}
+		
+			$("#input_name_wsdb").keyup(function(data)
+			{
+				var curStr = $('#input_name_wsdb').val();
+				if(curStr.trim() !=  curStr)
+				{
+					document.getElementById("input_name_wsdb").value = curStr.trim();
+				}
+			});
+
+			let _butt_exec = document.createElement('button');
+			_butt_exec.id = 'execute_button_wsdb';
+			_butt_exec.innerHTML = 'Создать';
+			_butt_exec.classList.add('forbuttonExec');
+			parentElem.appendChild(_butt_exec);
 
 		}
 });
@@ -517,11 +477,9 @@ function generateDivCompute(div_id, head, token)
 		},
 	success: function(data) 
 		{
-			//console.log(data);
+
 			if(data.length>=1){
 				for(let i=0; i < data.length;i++){
-					
-					
 					
 					var arr = {};
 					for(key in data[i]){
@@ -671,15 +629,14 @@ function generateDivCompute(div_id, head, token)
 			let _select_vim = document.createElement('select');
 			_select_vim.id = 'select_vim';
 			_select_vim.classList.add('selectStyle');
-			//console.log(vimList.length);
 			
 			for(let i=0; i < vims.length; i++){
-				console.log('22222');
+
 				if(vims[i]["vim_type"] != "openstack"){
 					continue;
 				}
 				else{
-					//console.log(vimList[i]);
+
 					for(key in vims[i]){
 						if(key == 'name'){
 							let _option = document.createElement('option');
@@ -754,59 +711,65 @@ function generateDivCompute(div_id, head, token)
 							},
 						success: function(data) 
 							{
+								if(data["code"] == "CONFLICT"){
+									alert(" Сервис с указанным именем существует в текущем проекте! ");
+								}
+								else{
+									///////////////////////////////// создадим NSd
+									$.ajax({
+										type:"POST",
+										url: "./core/engine.php",
+										dataType: "json",
+										data: {
+											action: "createNSD",
+											name: instanceName,
+											token: token,
+											imageID: imageName,
+											ram: qntRAM,
+											vCPU: qntvCPU,
+											storage: qntStorage,
+											network: networkName,
+											vim: vim_id
+											},
+										success: function(data) 
+											{
+												console.log(data);
+												let nsd_id = '';
+												nsd_id = data['id'];
+									///////////////////////////////// создадим NS !!!!!!!
+												$.ajax({
+													type:"POST",
+													url: "./core/engine.php",
+													dataType: "json",
+													data: {
+														action: "createNS",
+														name: instanceName,
+														token: token,
+														imageID: imageName,
+														ram: qntRAM,
+														vCPU: qntvCPU,
+														storage: qntStorage,
+														network: networkName,
+														vim: vim_id,
+														ns_id: nsd_id,
+														instanceType: 'compute'
+														},
+													success: function(data) 
+														{
+															console.log(data);
+															getInstances(token);
+														}
+												});
+											}
+									});
 								
-								///////////////////////////////// создадим NSd
-								$.ajax({
-									type:"POST",
-									url: "./core/engine.php",
-									dataType: "json",
-									data: {
-										action: "createNSD",
-										name: instanceName,
-										token: token,
-										imageID: imageName,
-										ram: qntRAM,
-										vCPU: qntvCPU,
-										storage: qntStorage,
-										network: networkName,
-										vim: vim_id
-										},
-									success: function(data) 
-										{
-											console.log(data);
-											let nsd_id = '';
-											nsd_id = data['id'];
-								///////////////////////////////// создадим NS !!!!!!!
-											$.ajax({
-												type:"POST",
-												url: "./core/engine.php",
-												dataType: "json",
-												data: {
-													action: "createNS",
-													name: instanceName,
-													token: token,
-													imageID: imageName,
-													ram: qntRAM,
-													vCPU: qntvCPU,
-													storage: qntStorage,
-													network: networkName,
-													vim: vim_id,
-													ns_id: nsd_id,
-													instanceType: 'compute'
-													},
-												success: function(data) 
-													{
-														console.log(data);
-														getInstances(token);
-													}
-											});
-										}
-								});
-								
-								
+								}
 							}
 					});
 					
+				}
+				else{
+					alert(" Не указано название сервиса! ");
 				}
 			});
 		}
@@ -865,9 +828,9 @@ function getInstances(token){
 						{
 							
 								ns_id_id = this.id;
-								console.log(this.id);
+
 								ns_id = ns_id_id.replace('TRASH_IMG_', '');
-								console.log(ns_id);
+
 								
 								$.ajax({
 								type:"POST",
@@ -880,7 +843,6 @@ function getInstances(token){
 									},
 								success: function(data) 
 									{						
-										console.log(data);
 										location.reload();
 									}
 								});

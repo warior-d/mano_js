@@ -71,13 +71,13 @@
 .wsdbTableP {font-family: 'MTSmain'; font-size: 14px; color: #626C77;}
 .divBottomMargin {margin-bottom: 20px;}
 
-.divResourseWS {width: 100%; height: 100%; border: 2px solid #f0f0f0; border-radius: 8px; cursor: pointer;}
+.divResourseWS {width: 90%; height: 100%; border: 2px solid #f0f0f0; border-radius: 8px; cursor: pointer; }
 .divResourseWS:hover {border: 2px solid black;}
-.divResourseWSclk {width: 100%; height: 100%; border: 2px solid black; border-radius: 8px; cursor: pointer;}
+.divResourseWSclk {width: 90%; height: 100%; border: 2px solid black; border-radius: 8px; cursor: pointer; }
 
 
 .pWSdiv {font-family: 'MTSmed'; font-size: 14px; color: black; text-align: center; border-bottom: 1px solid #f0f0f0;}
-.pWSdiv1 {font-family: 'MTSmain'; font-size: 14px; color: #626C77; text-align: center; }
+.pWSdiv1 {font-family: 'MTSmain'; font-size: 14px; color: #626C77; text-align: center;}
 
 .headerMainDiv {font-family: 'MTSmed'; font-size: 24px; color: #1D2023; text-align: left; }
 .headerInfoTable {font-family: 'MTSmed'; font-size: 14px; color: #626C77; border-bottom: 3px solid #f0f0f0; text-align: left; }
