@@ -10,7 +10,28 @@ define('POST_NS','/nslcm/v1/ns_instances_content');
 define('DELETE_NS','/nslcm/v1/ns_instances_content/');
 
 
-getInstancesAndVims();
+
+$arr = ['SMALL' => 
+['vCPU'=>'1 core', 
+'RAM'=>'1 GB', 
+'SSD'=>'5 GB'],
+'MEDIUM' => 
+['vCPU'=>'2 core', 
+'RAM'=>'2 GB', 
+'SSD'=>'10 GB'],
+'LARGE' => 
+['vCPU'=>'4 core', 
+'RAM'=>'8 GB', 
+'SSD'=>'15 GB']
+];
+
+
+print_r(json_encode($arr));
+
+
+
+
+
 
 function getInstancesAndVims()
 {

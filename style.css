@@ -58,6 +58,26 @@
 .computeTableP {font-family: 'MTSmain'; font-size: 14px; color: #626C77;}
 .inputName {margin-bottom: 20px; width: 350px; height: 32px; background-color: #F2F3F7; font-family: MTSmain; font-size: 14px; color: #1D2023; border-radius: 5px; border: 1px solid #f0f0f0; padding: 5px; }
 .selectStyle {margin-bottom: 20px; width: 350px; height: 32px; background-color: #F2F3F7; font-family: MTSmain; font-size: 14px; color: #1D2023; border-radius: 5px; border: 1px solid #f0f0f0; padding: 5px; }
+.tblResourses {margin-bottom: 30px;}
+.fillingDivProgress {}
+
+.headerResoTable {font-family: 'MTSmed'; font-size: 14px; color: #626C77; border-bottom: 3px solid #f0f0f0; border-right: 1px solid #f0f0f0; text-align: left; }
+.tdMainDivReso {font-family: 'MTSmain'; font-size: 13px; border-bottom: 3px solid #f0f0f0; border-left: 1px solid #f0f0f0; padding-left: 5px}
+.tdMainDivReso_ {font-family: 'MTSmain'; font-size: 13px; border-bottom: 3px solid #f0f0f0; padding-bottom: 5px }
+.forProgressBar {background-color: rgb(200, 5, 15);}
+
+
+
+.wsdbTableP {font-family: 'MTSmain'; font-size: 14px; color: #626C77;}
+.divBottomMargin {margin-bottom: 20px;}
+
+.divResourseWS {width: 100%; height: 100%; border: 2px solid #f0f0f0; border-radius: 8px; cursor: pointer;}
+.divResourseWS:hover {border: 2px solid black;}
+.divResourseWSclk {width: 100%; height: 100%; border: 2px solid black; border-radius: 8px; cursor: pointer;}
+
+
+.pWSdiv {font-family: 'MTSmed'; font-size: 14px; color: black; text-align: center; border-bottom: 1px solid #f0f0f0;}
+.pWSdiv1 {font-family: 'MTSmain'; font-size: 14px; color: #626C77; text-align: center; }
 
 .headerMainDiv {font-family: 'MTSmed'; font-size: 24px; color: #1D2023; text-align: left; }
 .headerInfoTable {font-family: 'MTSmed'; font-size: 14px; color: #626C77; border-bottom: 3px solid #f0f0f0; text-align: left; }
@@ -65,6 +85,7 @@
 .tdMainDivStateBuild {font-family: 'MTSmain'; font-size: 13px; border-bottom: 3px solid #f0f0f0; color: #e8e409}
 .tdMainDivStateReady {font-family: 'MTSmain'; font-size: 13px; border-bottom: 3px solid #f0f0f0; color: #00e600}
 .tdMainDivStateTerminating {font-family: 'MTSmain'; font-size: 13px; border-bottom: 3px solid #f0f0f0; color: #ff4d00}
+.tdMainDivStateBroken {font-family: 'MTSmain'; font-size: 13px; border-bottom: 3px solid #f0f0f0; color: #990000}
 .forbutton:hover {background-color: rgb(200, 5, 15);}
 .puncts {height: 40px;}
 .puncts:hover {background: #f0f0f0; cursor: pointer; height: 100%; border-left: 2px solid red;}
