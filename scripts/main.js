@@ -173,11 +173,11 @@ function generateDivWSDB(div_id, head, token)
 			select_image.id = 'select_image_ws';
 			select_image.classList.add('selectStyle');
 			let optionImageUbu18 = document.createElement('option');
-			let optionImageUbu20 = document.createElement('option');
-			optionImageUbu18.innerHTML = 'Ubuntu 18.04';
-			optionImageUbu20.innerHTML = 'Ubuntu 20.04';
+			//let optionImageUbu20 = document.createElement('option');
+			optionImageUbu18.innerHTML = 'Ubuntu 18.04.6-lts';
+			//optionImageUbu20.innerHTML = 'Ubuntu 20.04';
 			select_image.appendChild(optionImageUbu18);
-			select_image.appendChild(optionImageUbu20);
+			//select_image.appendChild(optionImageUbu20);
 			name_div3.appendChild(select_image);		
 		
 
@@ -267,7 +267,7 @@ let paramsWS = [{
 
 			let name_div7 = document.getElementById('DIV_WS_7');
 			let select_image_db = document.createElement('select');
-			select_image_db.id = 'select_image';
+			select_image_db.id = 'select_image_db';
 			select_image_db.classList.add('selectStyle');
 			let optionImagePostgreSQL = document.createElement('option');
 			optionImagePostgreSQL.innerHTML = 'PostgreSQL';
@@ -409,6 +409,173 @@ let paramsDB = [{
 			_butt_exec.innerHTML = 'Создать';
 			_butt_exec.classList.add('forbuttonExec');
 			parentElem.appendChild(_butt_exec);
+
+
+
+			$("#execute_button_wsdb").click(function() {
+				let instanceName = $('#input_name_wsdb').val();
+
+				let imageNameWS = $('#select_image_ws').val();
+				
+				//resoursesWS
+				//resoursesDB
+				
+				let imageNameDB =  $('#select_image_db').val();
+
+				let networkName = $('#select_net_ws').val();
+
+				let vimName = $('#select_vim_ws').val();
+				
+				let vim_id = '';
+				
+				for(var i =0; i < vims.length; i++){
+					
+					if(vims[i]['name'] == vimName){
+						vim_id = vims[i]['_id'];
+					}
+					
+				}
+				
+				//Ubuntu 18.04.6-lts DIV_WS_RWS_1 DIV_WS_RDB_1 shared devstack_test
+				
+				let vCPUws = '';
+				let RAMws = '';
+				let storagews = '';
+
+				let vCPUdb = '';
+				let RAMdb = '';
+				let storagedb = '';
+				
+				if(resoursesWS == 'DIV_WS_RWS_1'){
+					vCPUws = '1';
+					RAMws = '1';
+					storagews = '5';
+				}
+				else if(resoursesWS == 'DIV_WS_RWS_2'){
+					vCPUws = '2';
+					RAMws = '2';
+					storagews = '10';
+				}					
+				else if(resoursesWS == 'DIV_WS_RWS_3'){
+					vCPUws = '4';
+					RAMws = '8';
+					storagews = '15';
+				}				
+
+				if(resoursesDB == 'DIV_WS_RDB_1'){
+					vCPUdb = '1';
+					RAMdb = '1';
+					storagedb = '10';
+				}
+				else if(resoursesDB == 'DIV_WS_RDB_2'){
+					vCPUdb = '2';
+					RAMdb = '2';
+					storagedb = '10';
+				}					
+				else if(resoursesDB == 'DIV_WS_RDB_3'){
+					vCPUdb = '4';
+					RAMdb = '8';
+					storagedb = '10';
+				}	
+
+				
+				
+				if(instanceName != '' && resoursesWS != '' && resoursesDB != ''){
+					
+					console.log(instanceName + '' + imageNameWS + '' + resoursesWS + '' + resoursesDB + '' + networkName + '' + vimName);
+					
+										//////////////////////////////////////////// создадим VNFd
+					$.ajax({
+						type:"POST",
+						url: "./core/engine.php",
+						dataType: "json",
+						data: {
+							action: "createVNFDwsdb",
+							name: instanceName,
+							token: token,
+							imageIDWS: imageNameWS,
+							imageIDDB: imageNameDB,
+							ramWS: RAMws,
+							vCPUWS: vCPUws,
+							storageWS: storagews,
+							ramDB: RAMdb,
+							vCPUDB: vCPUdb,
+							storageDB: storagedb,							
+							network: networkName,
+							vim: vim_id
+							},
+						success: function(data) 
+							{
+								console.log(data);
+								
+								if(data["code"] == "CONFLICT"){
+									alert(" Сервис с указанным именем существует в текущем проекте! ");
+								}
+								else{
+									///////////////////////////////// создадим NSd
+									$.ajax({
+										type:"POST",
+										url: "./core/engine.php",
+										dataType: "json",
+										data: {
+											action: "createNSDwsdb",
+											name: instanceName,
+											token: token,
+											ipDB: "192.168.233.244",
+											network: networkName,
+											vim: vim_id
+											},
+										success: function(data) 
+											{
+												console.log(data);
+												let nsd_id = '';
+												nsd_id = data['id'];
+												
+												
+									///////////////////////////////// создадим NS !!!!!!!
+												$.ajax({
+													type:"POST",
+													url: "./core/engine.php",
+													dataType: "json",
+													data: {
+														action: "createNSwsdb",
+														name: instanceName,
+														token: token,
+														vim: vim_id,
+														ns_id: nsd_id,
+														instanceType: 'webserver_database'
+														},
+													success: function(data) 
+														{
+															console.log(data);
+															getInstances(token);
+														}
+												});
+												
+											}
+									});
+								
+								}
+								
+							}
+					});
+
+				}
+				else if(instanceName == ''){
+					alert(" Не указано название сервиса! ");
+				}				
+				else if(resoursesWS == ''){
+					alert(" Не выбраны ресурсы WS! ");
+				}
+				else if(resoursesDB == ''){
+					alert(" Не выбраны ресурсы DB! ");
+				}
+			});
+
+
+
+
+
 
 		}
 });
