@@ -1,8 +1,8 @@
 <?php
 
-function getVNFdWSDB($name, $imageWS, $imageDB, $ramWS, $vcpuWS, $storageWS, $ramDB, $vcpuDB, $storageDB){
+function getVNFdWSDB($name, $imageWS, $imageDB, $ramWS, $vcpuWS, $storageWS, $ramDB, $vcpuDB, $storageDB, $ipDB, $cloud_config){
 
-//	$cloud_config = '';
+//$cloud_config = "";
 
 $newVNFd = 
 <<<VNFd
@@ -80,6 +80,7 @@ $newVNFd =
 		"vdu": [
 			{
 				"id": "ws_vm",
+				"cloud-init": $cloud_config,
 				"int-cpd": [
 					{
 						"id": "int_ws_vm",

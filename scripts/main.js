@@ -479,6 +479,8 @@ let paramsDB = [{
 				}	
 
 				
+				let ip_database = "192.168.233.244";
+				
 				
 				if(instanceName != '' && resoursesWS != '' && resoursesDB != ''){
 					
@@ -502,6 +504,7 @@ let paramsDB = [{
 							vCPUDB: vCPUdb,
 							storageDB: storagedb,							
 							network: networkName,
+							ipDB: ip_database,
 							vim: vim_id
 							},
 						success: function(data) 
@@ -521,7 +524,7 @@ let paramsDB = [{
 											action: "createNSDwsdb",
 											name: instanceName,
 											token: token,
-											ipDB: "192.168.233.244",
+											ipDB: ip_database,
 											network: networkName,
 											vim: vim_id
 											},

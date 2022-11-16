@@ -39,16 +39,37 @@ function createVNFDwsdb()
 	$network = $_REQUEST['network'];
 	$vim = $_REQUEST['vim'];
 	$cloud_config = '';
+	$ipDB = $_REQUEST['ipDB'];
 
 	$vnfd_name = $name.'_vnf';
 	
+
+$cld = 
+<<<LL
+#cloud-config
+preserve_hostname: false
+hostname: web_server_machine
+password: 12345
+chpasswd:
+    expire: false
+ssh_pwauth: false      
+write_files:
+- content: |
+    <?php
+    define('DBHOST_IP','$ipDB');
+    ?>
+  owner: 'root:root'
+  path: /var/www/html/core/dbhost.php
+LL;
 	
-    $vnfd = getVNFdWSDB($vnfd_name, $imageWS, $imageDB, $ramWS, $vcpuWS, $storageWS, $ramDB, $vcpuDB, $storageDB);
+	$cloud_config = json_encode($cld);
+	
+    $vnfd = getVNFdWSDB($vnfd_name, $imageWS, $imageDB, $ramWS, $vcpuWS, $storageWS, $ramDB, $vcpuDB, $storageDB, $ipDB, $cloud_config);
 
 	$ch = curl_init(API_MANO_BASE.POST_VNFD);
-	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8',
-	'Accept: application/json; charset=utf-8', 'Authorization: Bearer '.$token));
-	curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Connection: keep-alive',
+	'Accept: application/json', 'Authorization: Bearer '.$token));
+	curl_setopt($ch, CURLOPT_POST, true);
 	curl_setopt($ch, CURLOPT_POSTFIELDS, $vnfd); 
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -139,7 +160,6 @@ function createVNFD()
 
 	$vnfd_name = $name.'_vnf';
     $vnfd = getVNFd($vnfd_name, $image, $ram, $vcpu, $storage);
-
 	$ch = curl_init(API_MANO_BASE.POST_VNFD);
 	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8',
 	'Accept: application/json; charset=utf-8', 'Authorization: Bearer '.$token));
