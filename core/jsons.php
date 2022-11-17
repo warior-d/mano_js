@@ -1,5 +1,49 @@
 <?php
 
+function getOS(){
+	
+$osJS = 
+<<<FFF
+{
+  "remote_console": {
+    "protocol": "vnc",
+    "type": "novnc"
+  }
+}	
+FFF;
+return $osJS;
+}
+
+
+
+function getOStoken($os_user, $os_pass, $os_tenant){
+
+$newDATA = 
+<<<DATA
+{ "auth": {
+    "identity": {
+      "methods": ["password"],
+      "password": {
+        "user": {
+          "name": "$os_user",
+          "domain": { "id": "default" },
+          "password": "$os_pass"
+        }
+      }
+    },
+    "scope": {
+      "project": {
+        "name": "$os_tenant",
+        "domain": { "id": "default" }
+      }
+    }
+  }
+}
+DATA;
+return $newDATA;
+}
+
+
 function getVNFdWSDB($name, $imageWS, $imageDB, $ramWS, $vcpuWS, $storageWS, $ramDB, $vcpuDB, $storageDB, $ipDB, $cloud_config){
 
 //$cloud_config = "";

@@ -8,6 +8,7 @@ define('POST_VNFD','/vnfpkgm/v1/vnf_packages_content');
 define('POST_NSD','/nsd/v1/ns_descriptors_content');
 define('POST_NS','/nslcm/v1/ns_instances_content');
 define('DELETE_NS','/nslcm/v1/ns_instances_content/');
+define('GET_VNFR','/nslcm/v1/vnf_instances');
 //
 
  if(!empty($_REQUEST)){
@@ -17,6 +18,117 @@ define('DELETE_NS','/nslcm/v1/ns_instances_content/');
 	}
 	die();
 }
+
+
+function getOpenstackToken()
+{
+	
+	include "jsons.php";
+	
+	$api_openstack = $_REQUEST['api_openstack'];
+	$openstack_user = $_REQUEST['openstack_user'];
+	$openstack_pass = $_REQUEST['openstack_pass'];
+	$openstack_tenant = $_REQUEST['openstack_tenant'];
+	$openstack_machine_id = $_REQUEST['openstack_machine_id'];
+	
+	$os_token_url = '/auth/tokens';
+	
+	$json_os = getOStoken($openstack_user, $openstack_pass, $openstack_tenant);
+	$headers = [];
+	$ch = curl_init($api_openstack.$os_token_url);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json',
+	'Accept: application/json'));
+	curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $json_os); 
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($ch, CURLOPT_HEADER, "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)");
+	curl_setopt($ch, CURLOPT_HEADERFUNCTION,
+		function($curl, $header) use (&$headers)
+	{
+		$len = strlen($header);
+		$header = explode(':', $header, 2);
+		if (count($header) < 2) // ignore invalid headers
+		  return $len;
+
+		$headers[strtolower(trim($header[0]))][] = trim($header[1]);
+		
+		return $len;
+	  }
+	);
+	
+	$arr_token = curl_exec($ch);
+	curl_close($ch);
+
+	
+	$response_array = json_decode($arr_token, true);
+	$token_os_arr = $headers['x-subject-token'];
+	$out_x_token = $token_os_arr;
+	$x_token = $token_os_arr[0];
+	$project_id = $response_array['token']['project']['id'];
+	$compute_api_url = '';
+	
+	for($i = 0; $i < count($response_array['token']['catalog']); $i++){
+		
+		$inner_arr = $response_array['token']['catalog'][$i];
+		
+		if($inner_arr['type'] == 'compute'){
+			$compute_api_url = $inner_arr['endpoints']['0']['url'];
+		}
+		
+	}
+
+	$data= getOS();
+	$url_get_cons = $compute_api_url.'/servers/'.$openstack_machine_id.'/remote-consoles';
+
+	$ch = curl_init($url_get_cons);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json',
+	'X-OpenStack-Nova-API-Version: 2.6', 
+	'X-Auth-Token: '.$x_token));
+	curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $data); 
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($ch, CURLOPT_HEADER, "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)");
+	$url_nvc = curl_exec($ch);
+	$status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+	curl_close($ch);
+	
+	$url_arr = json_decode($url_nvc, true);
+	$clear_url = $url_arr['remote_console']['url'];
+	
+	echo json_encode($clear_url);
+}
+
+
+
+function getVNFR()
+{
+	
+	$token = $_REQUEST['token'];
+
+	$ch = curl_init(API_MANO_BASE.GET_VNFR);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8',
+	'Accept: application/json; charset=utf-8', 'Connection: keep-alive', 'Authorization: Bearer '.$token,
+	'Content-Length: '.mb_strlen($data)));
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($ch, CURLOPT_HEADER, "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)");
+	$res = curl_exec($ch);
+	curl_close($ch);
+	#print_r($res);
+	echo $res;
+	
+}
+
+
+
+
+
+
+
+
+
 
 function createVNFDwsdb()
 {
@@ -283,7 +395,7 @@ function getInstancesAndVims()
 	//print_r( $decoded_json);
 	
 	$arrVims = [];
-	$needed_vim_params = ["_id","name","vim_url","resources"];
+	$needed_vim_params = ["_id","name","vim_url","resources","vim_tenant_name"];
 	
 	for($i = 0; $i < count($decoded_json); $i++){
 		foreach($decoded_json[$i] as $key=>$value){
@@ -315,6 +427,8 @@ function getInstancesAndVims()
 							
 								$decoded_json_nss[$i]["datacenter_name"] = $arrVims[$y]["name"];
 								$decoded_json_nss[$i]["vim_resources"] = $arrVims[$y]["resources"];
+								$decoded_json_nss[$i]["vim_url"] = $arrVims[$y]["vim_url"];
+								$decoded_json_nss[$i]["vim_tenant"] = $arrVims[$y]["vim_tenant_name"];
 						}
 					}
 				}

@@ -590,19 +590,6 @@ let paramsDB = [{
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 function createCompute(token){
 	
 	var mainDiv = document.getElementById("main_div");
@@ -989,14 +976,15 @@ function getInstances(token){
 				},
 				success: function(vims_accounts) 
 					{
-				//console.log(vims_accounts);
 				
 				//1//////////////////////////////// "code": "UNAUTHORIZED", ////////////////////////
 						generateDivInfo("main_div", dataInstances, vims_accounts);
+						
 			    ///////////////////////////////////    удалить инстанс!!!!
+				
 						$(document).on('click','img[id^="TRASH_IMG_"]', function(data)
 						{
-							
+								//TODO: возможная бага. Несколько раз может вызываться так как таких ID>1!!!
 								ns_id_id = this.id;
 
 								ns_id = ns_id_id.replace('TRASH_IMG_', '');
@@ -1020,6 +1008,40 @@ function getInstances(token){
 							
 						});
 						
+			    ///////////////////////////////////    исследуем инстанс!!!!
+				
+				
+						$('img').click(function()
+						{
+							
+							var clickId = $(this).attr('id');
+							
+							if(clickId.indexOf("FOLDER") >= 0){
+
+								ns_id_id = this.id;
+
+								ns_id = ns_id_id.replace('FOLDER_IMG_', '');
+								
+								
+								$.ajax({
+								type:"POST",
+								url: "./core/engine.php",
+								dataType: "json",
+								data: {
+									action: "getVNFR",
+									token: token
+									},
+								success: function(vnfrs) 
+									{						
+										//console.log(vnfrs);
+										generateInfoInstance("main_div", ns_id, vnfrs, vims_accounts, dataInstances);
+									}
+								});
+
+							}	
+							
+						});
+						
 						
 					}	
 						
@@ -1029,6 +1051,382 @@ function getInstances(token){
 		}
 	});
 }
+
+
+
+function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances)
+{
+	let parentElem = document.getElementById(div_id);
+	
+	console.log(ns_id);
+	console.log("vnfrs");
+	console.log(vnfrs);
+	//console.log(vims_accounts);
+	console.log("dataInstances");
+	console.log(dataInstances);
+
+	document.getElementById("roadMap").innerHTML = 'EaaS &nbsp &nbsp>&nbsp &nbsp  Дашборд';
+	document.getElementById("placeMap").innerHTML = 'Информация о сервисе';
+	document.getElementById("main_div").innerHTML = '';
+
+	var head = {
+		"_id": "ID сервиса",
+		"name": "Название",
+		"description": "Тип сервиса",
+		"datacenter_name": "Площадка",
+		"nsState": "Статус сервиса",
+		"create-time": "Дата создания"
+	};
+	
+
+	var params = {
+		"_id": '',
+		"name": '',
+		"description": '',
+		"datacenter_name": '',
+		"nsState": '',
+		"create-time": ''	
+	};
+
+
+
+
+	let service_type = '';
+	let vim_url = '';
+	let vim_naming = '';
+	let vim_tenant = '';
+
+	for(let i = 0; i < dataInstances.length; i++){
+		
+		if(dataInstances[i]['_id'] == ns_id){
+			
+			vim_url = dataInstances[i]["vim_url"];
+			vim_tenant = dataInstances[i]["vim_tenant"];
+			
+			for(key in head){
+				params[key] = dataInstances[i][key];
+				
+				if(key == 'description'){
+						service_type = dataInstances[i][key];
+					}
+				if(key == 'datacenter_name'){
+						vim_naming = dataInstances[i][key];
+					}
+				if(key == 'create-time'){
+					var date = new Date(dataInstances[i][key] * 1000);
+					params[key] = formatDateWithHoursMin(date);
+				}
+			}
+		}
+	}
+
+		////   ################    Общая инфа
+
+	let _p = document.createElement('p');
+	_p.innerHTML = "Сервис "+ name + ':';
+	_p.classList.add('headerMainDiv');
+	parentElem.appendChild(_p);
+
+	
+	let _tbl = document.createElement('table'); //table +
+	_tbl.setAttribute('border', '0');
+	_tbl.setAttribute('width', '60%');
+	
+	for (key in head) {
+		
+		let _tr_header = document.createElement('tr'); //tr +
+			let _tb_header = document.createElement('td');
+			_tb_header.setAttribute('align', 'center');
+			_tb_header.innerHTML = head[key];
+			_tb_header.classList.add('headerInfoTable');
+			//_tb_txt.classList.add('dotable');
+			
+			let _tb_header_param = document.createElement('td');
+			_tb_header_param.setAttribute('align', 'left');
+			_tb_header_param.innerHTML = params[key];
+			_tb_header_param.classList.add('tdMainDivReso');		
+			
+		_tr_header.appendChild(_tb_header);	
+		_tr_header.appendChild(_tb_header_param);	
+		_tbl.appendChild(_tr_header);
+	}
+	
+	parentElem.appendChild(_tbl);
+	
+	
+		////   ################    Параметры
+	
+
+	let _p_invites = document.createElement('p');
+	_p_invites.innerHTML = "Доступы :";
+	_p_invites.classList.add('headerMainDiv');
+	parentElem.appendChild(_p_invites);
+	
+	
+	let creds_openstack = {
+		"devstack_114": "admin|devstack",
+		"devstack_test": "admin|labstack"
+	}
+		
+
+
+
+//						###### Compute ######
+
+	if(service_type == 'compute'){
+		
+		var header_compute = {
+			"ip": "IP-адрес",
+			"console": "Консоль",
+			"username": "Пользователь",
+			"password": "Пароль"
+		};
+
+		var header_compute_params = {
+			"ip": "",
+			"console": "",
+			"username": "ubuntu",
+			"password": ""
+		};		
+		
+		let console_ = 'url';
+		let console_url = '';
+		let console_port = '6080';
+		let console_token = 'token';
+		let console_name_machine = '';
+		let console_id_machine = '';
+		
+		var reg = /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/;
+		var host = vim_url.match(reg);
+		
+		console_url = 'http://' + host[0];
+		
+		for(let i = 0; i < vnfrs.length; i++){
+
+			if(vnfrs[i]["nsr-id-ref"] == ns_id){
+				
+				header_compute_params["ip"] = vnfrs[i]["ip-address"];
+				arr_vim_info = vnfrs[i]["vdur"]["0"]["vim_info"];
+				for(key in arr_vim_info){
+					for(detail in arr_vim_info[key]){
+						if(detail == 'vim_id'){
+							console_id_machine = arr_vim_info[key][detail];
+						}
+						else if(detail == 'vim_name'){
+							console_name_machine = arr_vim_info[key][detail];
+						}
+					}
+				}
+				
+			}
+			
+		}
+
+		let vim_pass = '';
+		let vim_username = '';
+		let vim_tennant = vim_tenant;
+		let vim_creds = creds_openstack[vim_naming];
+		vim_username = vim_creds.split('|')[0];
+		vim_pass = vim_creds.split('|')[1];
+
+		$.ajax({
+		type:"POST",
+		url: "./core/engine.php",
+		dataType: "json",
+		data: {
+			action: "getOpenstackToken",
+			api_openstack: vim_url,
+			openstack_user: vim_username,
+			openstack_pass: vim_pass,
+			openstack_tenant: vim_tennant,
+			openstack_machine_id: console_id_machine
+			},
+		success: function(getToken) 
+			{						
+				
+				let _tbl_comp = document.createElement('table'); //table +
+				_tbl_comp.setAttribute('border', '0');
+				_tbl_comp.setAttribute('width', '60%');
+					
+					for (key in header_compute) {
+							
+						let _tr_compute = document.createElement('tr');
+						let _tb_compute_name = document.createElement('td');
+							_tb_compute_name.setAttribute('align', 'left');
+							_tb_compute_name.setAttribute('width', '40%');
+							_tb_compute_name.innerHTML = header_compute[key];
+							_tb_compute_name.classList.add('headerInfoTable');				
+						
+						let _tb_compute_peram = document.createElement('td');
+							_tb_compute_peram.setAttribute('align', 'left');
+							if(key == 'console'){
+								_tb_compute_peram.innerHTML = '<a href="'+getToken+'" target="_blank">Подключиться</a>'; 
+							}
+							else{
+								_tb_compute_peram.innerHTML = header_compute_params[key];
+							}
+							
+							_tb_compute_peram.classList.add('tdMainDivReso');			
+					
+					_tr_compute.appendChild(_tb_compute_name);	
+					_tr_compute.appendChild(_tb_compute_peram);	
+					_tbl_comp.appendChild(_tr_compute);			
+					}
+					
+				parentElem.appendChild(_tbl_comp);
+
+			}
+		});	
+
+	}//					###### WSDB ######
+	else if(service_type == 'webserver_database'){
+			
+	var header_wsdb = {
+		"ip": "IP-адрес",
+		"username": "Пользователь",
+		"password": "Пароль"
+	};
+
+	var header_wsdb_params = {
+		"ip": "",
+		"console": "",
+		"username": "ubuntu",
+		"password": ""
+	};		
+		
+		let ip_ws = '';
+		let ip_db = '';
+		
+		
+		for(let i = 0; i < vnfrs.length; i++){
+
+			if(vnfrs[i]["nsr-id-ref"] == ns_id){
+				
+				let arr_vm_info = vnfrs[i]["vdur"];
+				
+				for(key in arr_vm_info){
+
+						if(arr_vm_info[key]['vdu-name'] == "ws_vm"){
+							ip_ws = arr_vm_info[key]['ip-address'];
+						}
+						else if(arr_vm_info[key]['vdu-name'] == "db_vm"){
+							ip_db = arr_vm_info[key]['ip-address'];
+						}
+						
+					}
+				}
+			
+		}
+		
+		
+		let tbl_wsdb = document.createElement('table');
+			tbl_wsdb.setAttribute('border', '0');
+			tbl_wsdb.setAttribute('width', '50%');		
+			
+			
+		let _tr_ws = document.createElement('tr');
+			let _tb_ws_h = document.createElement('td');
+				_tb_ws_h.setAttribute('align', 'center');
+				_tb_ws_h.innerHTML = 'IP веб-сервера';
+				_tb_ws_h.classList.add('headerInfoTable');
+			
+			let _tb_ws_p = document.createElement('td');
+			_tb_ws_p.setAttribute('align', 'left');
+			_tb_ws_p.innerHTML = '<a href="http://'+ip_ws+'" target="_blank">Подключиться</a>';
+			_tb_ws_p.classList.add('tdMainDivReso');		
+			
+		_tr_ws.appendChild(_tb_ws_h);	
+		_tr_ws.appendChild(_tb_ws_p);	
+		tbl_wsdb.appendChild(_tr_ws);
+		
+		
+		let _tr_db_adm = document.createElement('tr');
+			let _tb_db_h1 = document.createElement('td');
+				_tb_db_h1.setAttribute('align', 'center');
+				_tb_db_h1.innerHTML = 'IP GUI базы данных';
+				_tb_db_h1.classList.add('headerInfoTable');
+			
+			let _tb_db_p1 = document.createElement('td');
+			_tb_db_p1.setAttribute('align', 'left');
+			_tb_db_p1.innerHTML = '<a href="http://'+ip_db+'/pgadmin4" target="_blank">Подключиться</a>';
+			_tb_db_p1.classList.add('tdMainDivReso');		
+			
+		_tr_db_adm.appendChild(_tb_db_h1);	
+		_tr_db_adm.appendChild(_tb_db_p1);	
+		tbl_wsdb.appendChild(_tr_db_adm);
+
+		let _tr_db_adm1 = document.createElement('tr');
+			let _tb_db_h11 = document.createElement('td');
+				_tb_db_h11.setAttribute('align', 'center');
+				_tb_db_h11.innerHTML = 'Логин/Пароль от GUI';
+				_tb_db_h11.classList.add('headerInfoTable');
+			
+			let _tb_db_p11 = document.createElement('td');
+			_tb_db_p11.setAttribute('align', 'left');
+			_tb_db_p11.innerHTML = 'admin@admin.ru : 123456';
+			_tb_db_p11.classList.add('tdMainDivReso');		
+			
+		_tr_db_adm1.appendChild(_tb_db_h11);	
+		_tr_db_adm1.appendChild(_tb_db_p11);	
+		tbl_wsdb.appendChild(_tr_db_adm1);
+
+
+		let _tr_db_adm2 = document.createElement('tr');
+			let _tb_db_h2 = document.createElement('td');
+				_tb_db_h2.setAttribute('align', 'center');
+				_tb_db_h2.innerHTML = 'Подключение к БД, IP:port';
+				_tb_db_h2.classList.add('headerInfoTable');
+			
+			let _tb_db_p2 = document.createElement('td');
+			_tb_db_p2.setAttribute('align', 'left');
+			_tb_db_p2.innerHTML = ip_db+':5432';
+			_tb_db_p2.classList.add('tdMainDivReso');		
+			
+		_tr_db_adm2.appendChild(_tb_db_h2);	
+		_tr_db_adm2.appendChild(_tb_db_p2);	
+		tbl_wsdb.appendChild(_tr_db_adm2);
+
+		parentElem.appendChild(tbl_wsdb);
+	}
+		
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 function generateDivDry(div_id)
@@ -1311,4 +1709,26 @@ function formatDate(date) {
   if (yy < 10) yy = '0' + yy;
 
   return dd + '.' + mm + '.' + yy;
+}
+
+
+function formatDateWithHoursMin(date) {
+
+  var dd = date.getDate();
+  if (dd < 10) dd = '0' + dd;
+
+  var mm = date.getMonth() + 1;
+  if (mm < 10) mm = '0' + mm;
+
+  var yy = date.getFullYear() % 100;
+  if (yy < 10) yy = '0' + yy;
+
+  var hh = date.getHours();
+  if (hh < 10) hh = '0' + hh;
+
+  var mi = date.getMinutes();
+  if (mi < 10) mi = '0' + mi;
+
+
+  return dd + '.' + mm + '.' + yy + ' ' + hh + ':' + mi;
 }
