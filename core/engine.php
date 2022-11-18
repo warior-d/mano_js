@@ -20,6 +20,126 @@ define('GET_VNFR','/nslcm/v1/vnf_instances');
 }
 
 
+
+function createVNFDinternet()
+{
+	
+	include "jsons.php";
+	
+	$token = $_REQUEST['token'];
+	$name = $_REQUEST['name'];
+	
+	$internalNetwork = $_REQUEST['internalNetwork'];	
+	$externalNetwork = $_REQUEST['externalNetwork'];
+	
+	$vim = $_REQUEST['vim'];
+	$cloud_config = '';
+
+	$vnfd_name = $name.'_vnf';
+
+$cld = 
+<<<LL
+#cloud-config
+vyos_config_commands:
+  - set service ssh port 22  
+  - set system login user vyos authentication plaintext-password 'vyospass'
+  - set system host-name 'vyos-1-single'
+  - set interfaces ethernet eth0 address 'dhcp'
+  - set interfaces ethernet eth0 description 'mgmt iface'
+  - delete interfaces ethernet eth1 address 'dhcp'
+  - set interfaces ethernet eth1 address '192.168.0.1/24'
+  - set interfaces ethernet eth1 description 'internal'
+  - set nat source rule 100 outbound-interface 'eth0'
+  - set nat source rule 100 source address '192.168.0.0/24'
+  - set nat source rule 100 translation address 'masquerade'
+LL;
+
+
+	
+	$cloud_config = json_encode($cld);
+
+    $vnfd = getVNFdInternet($vnfd_name, $cloud_config);
+	$ch = curl_init(API_MANO_BASE.POST_VNFD);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Connection: keep-alive',
+	'Accept: application/json', 'Authorization: Bearer '.$token));
+	curl_setopt($ch, CURLOPT_POST, true);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $vnfd); 
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($ch, CURLOPT_HEADER, "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)");
+	$id_vnfd = curl_exec($ch);
+	$status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+	curl_close($ch);
+	echo $id_vnfd;
+}
+
+
+
+function createNSDinternet()
+{
+	include "jsons.php";
+	
+	$token = $_REQUEST['token'];
+	$name = $_REQUEST['name']; 
+	$internalNetwork = $_REQUEST['internalNetwork'];	
+	$externalNetwork = $_REQUEST['externalNetwork'];
+
+	$vnfd_name = $name.'_vnf';
+	$nsd_name = $name.'_ns';
+	$nsd = getNSdInternet($nsd_name, $vnfd_name, $internalNetwork, $externalNetwork);	
+
+	$ch = curl_init(API_MANO_BASE.POST_NSD);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8',
+	'Accept: application/json; charset=utf-8', 'Authorization: Bearer '.$token));
+	curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $nsd); 
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($ch, CURLOPT_HEADER, "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)");
+	$id_nsd = curl_exec($ch);
+	$status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+	curl_close($ch);
+	echo $id_nsd;
+}
+
+
+function createNSinternet()
+{
+	include "jsons.php";
+	
+	$token = $_REQUEST['token'];
+	$name = $_REQUEST['name']; 
+	$vim = $_REQUEST['vim'];
+	$ns_id = $_REQUEST['ns_id'];
+	$instanceType = $_REQUEST['instanceType'];
+
+	$nsd = getNetServinternet($name, $instanceType, $ns_id, $vim);	
+
+	$ch = curl_init(API_MANO_BASE.POST_NS);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8',
+	'Accept: application/json; charset=utf-8', 'Authorization: Bearer '.$token));
+	curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $nsd); 
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($ch, CURLOPT_HEADER, "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)");
+	$id_nsd = curl_exec($ch);
+	$status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+	curl_close($ch);
+	echo $id_nsd;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 function getOpenstackToken()
 {
 	

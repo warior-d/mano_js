@@ -1,5 +1,263 @@
 <?php
 
+
+function getVNFdInternet($name, $cloud_config){
+
+//	$cloud_config = '';
+
+$newVNFd = 
+<<<VNFd
+{
+	"vnfd": {
+		"id": "$name",
+		"version": 1,
+		"description": "S$name",
+		"mgmt-cp": "vnf-mgmt-ext",
+		"product-name": "$name",
+		"sw-image-desc": [
+			{
+				"id": "vyos-1.4-202209181303",
+				"image": "vyos-1.4-202209181303",
+				"name": "vyos-1.4-202209181303"
+			},
+			{
+				"id": "vyos-1.4-202207220921",
+				"image": "vyos-1.4-202207220921",
+				"name": "vyos-1.4-202207220921"
+			}
+		],
+		"df": [
+			{
+				"id": "default-df",
+				"instantiation-level": [
+					{
+						"id": "default-instantiation-level",
+						"vdu-level": [
+							{
+								"number-of-instances": 1,
+								"vdu-id": "vyos-VM"
+							}
+						]
+					}
+				],
+				"vdu-profile": [
+					{
+						"id": "vyos-VM",
+						"min-number-of-instances": 1,
+						"max-number-of-instances": 1
+					}
+				]
+			}
+		],
+		"ext-cpd": [
+			{
+				"id": "vnf-mgmt-ext",
+				"int-cpd": {
+					"cpd": "vdu-eth0-int",
+					"vdu-id": "vyos-VM"
+				}
+			},
+			{
+				"id": "vnf-internal-ext",
+				"int-cpd": {
+					"cpd": "vdu-eth1-int",
+					"vdu-id": "vyos-VM"
+				},
+				"port-security-enabled": false,
+				"port-security-disable-strategy": "allow-address-pairs"
+			}
+		],
+		"vdu": [
+			{
+				"id": "vyos-VM",
+				"name": "vyos-VM",
+				"supplemental-boot-data": {
+					"boot-data-drive": "true"
+				},
+				"sw-image-desc": "vyos-1.4-202209181303",
+				"cloud-init": $cloud_config,
+				"int-cpd": [
+					{
+						"id": "vdu-eth0-int",
+						"virtual-network-interface-requirement": [
+							{
+								"name": "vdu-eth0",
+								"position": 0,
+								"virtual-interface": {
+									"type": "PARAVIRT"
+								}
+							}
+						]
+					},
+					{
+						"id": "vdu-eth1-int",
+						"virtual-network-interface-requirement": [
+							{
+								"name": "vdu-eth1",
+								"position": 1,
+								"virtual-interface": {
+									"type": "PARAVIRT"
+								}
+							}
+						]
+					}
+				],
+				"monitoring-parameter": [
+					{
+						"id": "vyos_cpu_util",
+						"name": "vyos_cpu_util",
+						"performance-metric": "cpu_utilization"
+					},
+					{
+						"id": "vyos_memory_util",
+						"name": "vyos_memory_util",
+						"performance-metric": "average_memory_utilization"
+					},
+					{
+						"id": "vyos_packets_sent",
+						"name": "vyos_packets_sent",
+						"performance-metric": "packets_sent"
+					},
+					{
+						"id": "vyos_packets_received",
+						"name": "vyos_packets_received",
+						"performance-metric": "packets_received"
+					},
+					{
+						"id": "vyos_packets_in_dropped",
+						"name": "vyos_packets_in_dropped",
+						"performance-metric": "packets_in_dropped"
+					},
+					{
+						"id": "vyos_packets_ous_dropped",
+						"name": "vyos_packets_out_dropped",
+						"performance-metric": "packets_in_dropped"
+					}
+				],
+				"virtual-compute-desc": "vyos-VM-compute",
+				"virtual-storage-desc": [
+					"vyos-VM-storage"
+				]
+			}
+		],
+		"virtual-compute-desc": [
+			{
+				"id": "vyos-VM-compute",
+				"virtual-cpu": {
+					"num-virtual-cpu": 1
+				},
+				"virtual-memory": {
+					"size": 2
+				}
+			}
+		],
+		"virtual-storage-desc": [
+			{
+				"id": "vyos-VM-storage",
+				"size-of-storage": 10
+			}
+		]
+	}
+}
+VNFd;
+
+return $newVNFd;
+
+}
+
+
+
+function getNSdInternet($nsd_name, $vnfd_name, $internalNetwork, $externalNetwork){
+$nsd = 
+<<<NSD
+{
+	"nsd": {
+		"nsd": [
+			{
+				"description": "Single VyOS NS",
+				"id": "$nsd_name",
+				"name": "$nsd_name",
+				"version": 1,
+				"vnfd-id": [
+					"$vnfd_name"
+				],
+				"df": [
+					{
+						"id": "default-df",
+						"vnf-profile": [
+							{
+								"id": "vyos-1",
+								"virtual-link-connectivity": [
+									{
+										"constituent-cpd-id": [
+											{
+												"constituent-base-element-id": "vyos-1",
+												"constituent-cpd-id": "vnf-mgmt-ext"
+											}
+										],
+										"virtual-link-profile-id": "public"
+									},
+									{
+										"constituent-cpd-id": [
+											{
+												"constituent-base-element-id": "vyos-1",
+												"constituent-cpd-id": "vnf-internal-ext",
+												"ip-address": "192.168.233.100"
+											}
+										],
+										"virtual-link-profile-id": "internal"
+									}
+								],
+								"vnfd-id": "$vnfd_name"
+							}
+						]
+					}
+				],
+				"virtual-link-desc": [
+					{
+						"id": "public",
+						"vim-network-name": "$externalNetwork",
+						"mgmt-network": true
+					},
+					{
+						"id": "internal",
+						"vim-network-name": "$internalNetwork"
+					}
+				]
+			}
+		]
+	}
+}
+NSD;
+
+return $nsd;
+
+}
+
+
+function getNetServinternet($instance_name, $instance_description, $ns_id, $vim_id){
+
+
+$newNS = 
+<<<NS
+{
+  "nsName": "$instance_name",
+  "nsDescription": "$instance_description",
+  "nsdId": "$ns_id",
+  "vimAccountId": "$vim_id"
+}
+NS;
+
+return $newNS;
+}
+
+
+
+
+
+
+
+
 function getOS(){
 	
 $osJS = 

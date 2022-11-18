@@ -60,8 +60,8 @@ function createInternet(token){
 	var services = new Object();
 	services = {
 		"name": "Название сервиса",
-		"external_network": "Внешняя сеть",
 		"internal_network": "Внутренняя сеть",
+		"external_network": "Внешняя сеть",
 		"VIM": "Площадка"
 	};
 	
@@ -163,7 +163,7 @@ function generateDivInternet(div_id, head, token)
 			select_int_network.id = 'select_int_network';
 			select_int_network.classList.add('selectStyle');
 			let option_int_netw = document.createElement('option');
-			option_int_netw.innerHTML = 'internal';
+			option_int_netw.innerHTML = 'shared';
 			select_int_network.appendChild(option_int_netw);
 			name_div3.appendChild(select_int_network);
 
@@ -215,6 +215,117 @@ function generateDivInternet(div_id, head, token)
 			_butt_exec.innerHTML = 'Создать';
 			_butt_exec.classList.add('forbuttonExec');
 			parentElem.appendChild(_butt_exec);
+
+
+
+			
+			$("#execute_button_internet").click(function() {
+				let instanceName = $('#input_name_internet').val();
+
+				let internalNetwork = $('#select_int_network').val();
+				
+				let externalNetwork =  $('#select_ext_network').val();
+
+				let vimName = $('#select_vim_internet').val();
+				
+				let vim_id = '';
+				
+				for(var i =0; i < vims.length; i++){
+					
+					if(vims[i]['name'] == vimName){
+						vim_id = vims[i]['_id'];
+					}
+					
+				}
+				
+				
+				if(instanceName != ''){
+					
+					console.log(instanceName + '' + internalNetwork + '' + externalNetwork + '' + vimName);
+					
+										//////////////////////////////////////////// создадим VNFd
+					$.ajax({
+						type:"POST",
+						url: "./core/engine.php",
+						dataType: "json",
+						data: {
+							action: "createVNFDinternet",
+							name: instanceName,
+							token: token,
+							internalNetwork: internalNetwork,
+							externalNetwork: externalNetwork,
+							vim: vim_id
+							},
+						success: function(data) 
+							{
+								console.log(data);
+								
+								if(data["code"] == "CONFLICT"){
+									alert(" Сервис с указанным именем существует в текущем проекте! ");
+								}
+								else{
+									///////////////////////////////// создадим NSd
+									$.ajax({
+										type:"POST",
+										url: "./core/engine.php",
+										dataType: "json",
+										data: {
+											action: "createNSDinternet",
+											name: instanceName,
+											token: token,
+											internalNetwork: internalNetwork,
+											externalNetwork: externalNetwork,
+											vim: vim_id
+											},
+										success: function(data) 
+											{
+												console.log(data);
+												let nsd_id = '';
+												nsd_id = data['id'];
+												
+
+									///////////////////////////////// создадим NS !!!!!!!
+												$.ajax({
+													type:"POST",
+													url: "./core/engine.php",
+													dataType: "json",
+													data: {
+														action: "createNSinternet",
+														name: instanceName,
+														token: token,
+														vim: vim_id,
+														ns_id: nsd_id,
+														instanceType: 'internet'
+														},
+													success: function(data) 
+														{
+															console.log(data);
+															getInstances(token);
+														}
+												});
+
+											}
+									});
+								
+								}
+								
+							}
+					});
+
+				}
+				else if(instanceName == ''){
+					alert(" Не указано название сервиса! ");
+				}				
+				else if(resoursesWS == ''){
+					alert(" Не выбраны ресурсы WS! ");
+				}
+				else if(resoursesDB == ''){
+					alert(" Не выбраны ресурсы DB! ");
+				}
+			});
+
+
+
 
 		}
 		
@@ -535,9 +646,9 @@ let paramsDB = [{
 			select_net.classList.add('selectStyle');
 			let netShared = document.createElement('option');
 			let netPublic = document.createElement('option');
-			netShared.innerHTML = 'shared';
-			netPublic.innerHTML = 'public';
-			select_net.appendChild(netShared);
+
+			netPublic.innerHTML = 'external';
+
 			select_net.appendChild(netPublic);
 			name_div11.appendChild(select_net);	
 
@@ -648,8 +759,8 @@ let paramsDB = [{
 					storagedb = '10';
 				}	
 
-				
-				let ip_database = "192.168.233.244";
+				//TODO
+				let ip_database = "10.0.69.127";
 				
 				
 				if(instanceName != '' && resoursesWS != '' && resoursesDB != ''){
@@ -758,6 +869,13 @@ let paramsDB = [{
 	
 	
 }
+
+
+
+
+
+
+
 
 
 function createCompute(token){
@@ -883,7 +1001,7 @@ function generateDivCompute(div_id, head, token)
 			select_image.classList.add('selectStyle');
 			let optionImageUbu18 = document.createElement('option');
 			let optionImageUbu20 = document.createElement('option');
-			optionImageUbu18.innerHTML = 'Ubuntu 18.04';
+			optionImageUbu18.innerHTML = 'desktop-ubuntu-20.04';
 			optionImageUbu20.innerHTML = 'Ubuntu 20.04';
 			select_image.appendChild(optionImageUbu18);
 			select_image.appendChild(optionImageUbu20);
@@ -944,7 +1062,7 @@ function generateDivCompute(div_id, head, token)
 			let netShared = document.createElement('option');
 			let netPublic = document.createElement('option');
 			netShared.innerHTML = 'shared';
-			netPublic.innerHTML = 'public';
+			netPublic.innerHTML = 'external';
 			select_net.appendChild(netShared);
 			select_net.appendChild(netPublic);
 			name_div11.appendChild(select_net);	
@@ -1112,6 +1230,10 @@ function generateDivCompute(div_id, head, token)
 
 
 }
+
+
+
+
 
 
 function getInstances(token){
@@ -1338,7 +1460,8 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 		"devstack_114": "admin|devstack",
 		"devstack_test": "admin|labstack",
 		"openstack_EaaS": "admin|devstack",
-		"Openstack_EAAS": "admin|devstack"
+		"Openstack_EAAS": "admin|devstack",
+		"openstack_WORK": "admin|labstack"
 	}
 		
 
@@ -1436,8 +1559,23 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 						
 						let _tb_compute_peram = document.createElement('td');
 							_tb_compute_peram.setAttribute('align', 'left');
+							
+							
 							if(key == 'console'){
-								_tb_compute_peram.innerHTML = '<a href="'+getToken+'" target="_blank">Подключиться</a>'; 
+								if(header_compute_params['ip'] != null){
+									_tb_compute_peram.innerHTML = '<a href="'+getToken+'" target="_blank">Подключиться</a>';
+								}
+								else{
+									_tb_compute_peram.innerHTML = 'IP-адрес не назначен VIM';
+								}
+							}
+							else if(key == 'ip'){
+								if(header_compute_params[key] == null){
+									_tb_compute_peram.innerHTML = 'IP-адрес не назначен VIM';
+								}
+								else{
+								_tb_compute_peram.innerHTML = header_compute_params[key];
+								}
 							}
 							else{
 								_tb_compute_peram.innerHTML = header_compute_params[key];
@@ -1471,8 +1609,8 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 		"password": ""
 	};		
 		
-		let ip_ws = '';
-		let ip_db = '';
+		let ip_ws = 'IP not allowed';
+		let ip_db = 'IP not allowed';
 		
 		
 		for(let i = 0; i < vnfrs.length; i++){
@@ -1509,7 +1647,14 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 			
 			let _tb_ws_p = document.createElement('td');
 			_tb_ws_p.setAttribute('align', 'left');
+			
+			if(ip_ws == undefined){
+			_tb_ws_p.innerHTML = 'IP-адрес пока не назначен со стороны VIM';	
+			}
+			else{
 			_tb_ws_p.innerHTML = '<a href="http://'+ip_ws+'" target="_blank">Подключиться</a>';
+			}
+			
 			_tb_ws_p.classList.add('tdMainDivReso');		
 			
 		_tr_ws.appendChild(_tb_ws_h);	
@@ -1525,7 +1670,12 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 			
 			let _tb_db_p1 = document.createElement('td');
 			_tb_db_p1.setAttribute('align', 'left');
+			
+			if(ip_db == undefined){
+			_tb_db_p1.innerHTML = 'IP-адрес пока не назначен со стороны VIM';	
+			}else{
 			_tb_db_p1.innerHTML = '<a href="http://'+ip_db+'/pgadmin4" target="_blank">Подключиться</a>';
+			}
 			_tb_db_p1.classList.add('tdMainDivReso');		
 			
 		_tr_db_adm.appendChild(_tb_db_h1);	
@@ -1564,10 +1714,101 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 		tbl_wsdb.appendChild(_tr_db_adm2);
 
 		parentElem.appendChild(tbl_wsdb);
-	}
+	}//					                                 ###### INTERNET ######
+	else if(service_type == 'internet'){
+			
+		var header_wsdb = {
+			"internal_IP": "внутренний IP-адрес",
+			"external_IP": "внешний IP-адрес"
+		};
+
+		var header_wsdb_params = {
+			"internal_IP": "",
+			"external_IP": ""
+		};		
 		
+		let ip_int = 'IP-адрес пока не назначен VIM';
+		let ip_ext = 'IP-адрес пока не назначен VIM';		
+	
+		for(let i = 0; i < vnfrs.length; i++){
+
+			if(vnfrs[i]["nsr-id-ref"] == ns_id){
+				
+				let arr_vm_info = vnfrs[i]["vdur"]['0']["interfaces"];
+				
+				for(key in arr_vm_info){
+
+						if(arr_vm_info[key]['ns-vld-id'] == "public"){
+							ip_ext = arr_vm_info[key]['ip-address'];
+						}
+						else if(arr_vm_info[key]['ns-vld-id'] == "internal"){
+							ip_int = arr_vm_info[key]['ip-address'];
+						}
+						
+					}
+				}
+			
+		}	
+	
+	
+		let tbl_wsdb = document.createElement('table');
+			tbl_wsdb.setAttribute('border', '0');
+			tbl_wsdb.setAttribute('width', '50%');		
+			
+			
+		let _tr_ws = document.createElement('tr');
+			let _tb_ws_h = document.createElement('td');
+				_tb_ws_h.setAttribute('align', 'center');
+				_tb_ws_h.innerHTML = 'Внутренний IP-адрес';
+				_tb_ws_h.classList.add('headerInfoTable');
+			
+			let _tb_ws_p = document.createElement('td');
+			_tb_ws_p.setAttribute('align', 'left');
+			if(ip_int == undefined){
+				_tb_ws_p.innerHTML = 'IP-адрес еще не назначен VIM';
+			}
+			else{
+				_tb_ws_p.innerHTML = ip_int;
+			}		
+			_tb_ws_p.classList.add('tdMainDivReso');		
+			
+		_tr_ws.appendChild(_tb_ws_h);	
+		_tr_ws.appendChild(_tb_ws_p);	
+		tbl_wsdb.appendChild(_tr_ws);
+		
+		
+		let _tr_db_adm = document.createElement('tr');
+			let _tb_db_h1 = document.createElement('td');
+				_tb_db_h1.setAttribute('align', 'center');
+				_tb_db_h1.innerHTML = 'Внешний IP-адрес';
+				_tb_db_h1.classList.add('headerInfoTable');
+			
+			let _tb_db_p1 = document.createElement('td');
+			_tb_db_p1.setAttribute('align', 'left');
+			
+			if(ip_ext == undefined){
+				_tb_db_p1.innerHTML = 'IP-адрес еще не назначен VIM';
+			}
+			else{
+				_tb_db_p1.innerHTML = ip_ext;
+			}			
+			_tb_db_p1.classList.add('tdMainDivReso');		
+			
+		_tr_db_adm.appendChild(_tb_db_h1);	
+		_tr_db_adm.appendChild(_tb_db_p1);	
+		tbl_wsdb.appendChild(_tr_db_adm);
+
+
+		parentElem.appendChild(tbl_wsdb);
+	
+	}
 	
 }
+
+
+
+
+
 
 
 
@@ -1836,6 +2077,10 @@ else{
 		}
 	}
 }
+
+
+
+
 
 
 
