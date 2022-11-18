@@ -321,39 +321,6 @@ return $newNS;
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 function getVNFd($name, $image, $ram, $vcpu, $storage){
 
 //	$cloud_config = '';
@@ -409,9 +376,6 @@ $newVNFd =
 		"vdu": [
 		  {
 			"id": "ubuntu_VM",
-			"supplemental-boot-data": {
-				"boot-data-drive": "true"
-			},
 			"int-cpd": [
 			  {
 				"id": "int_ubuntu_VM",

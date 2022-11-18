@@ -24,13 +24,6 @@ $(document).ready(function(){
 		
 	});	
 	
-	//создать dbas
-	$("#div_dbaas").click(function() {
-		
-		console.log("dbas");
-
-	});	
-	
 	//создать ws
 	$("#div_ws").click(function() {
 		
@@ -38,13 +31,15 @@ $(document).ready(function(){
 
 	});	
 
-	//создать test
-	$("#div_test").click(function() {
+	//создать dbas
+	$("#div_internet").click(function() {
 		
-		console.log("test");
+		createInternet(token);
+		console.log("internet");
 
 	});	
-
+	
+	
 	$("#div_dashboard").click(function() {
 		getInstances(token);
 	});	
@@ -52,6 +47,180 @@ $(document).ready(function(){
 
 
 });
+
+
+
+function createInternet(token){
+	
+	var mainDiv = document.getElementById("main_div");
+	mainDiv.innerHTML = '';
+	document.getElementById("roadMap").innerHTML = 'EaaS &nbsp &nbsp>&nbsp &nbsp  Создание сервиса';
+	document.getElementById("placeMap").innerHTML = 'Создание сервиса';
+	
+	var services = new Object();
+	services = {
+		"name": "Название сервиса",
+		"external_network": "Внешняя сеть",
+		"internal_network": "Внутренняя сеть",
+		"VIM": "Площадка"
+	};
+	
+	generateDivInternet("main_div", services, token);
+}
+
+
+function generateDivInternet(div_id, head, token)
+{
+
+	var vims = new Array();
+	var needParams = ["vim_url", "name", "vim_type", "_id"];
+	
+
+	$.ajax({
+	type:"POST",
+	url: "./core/engine.php",
+	dataType: "json",
+	data: {
+		action: "getVims",
+		token: token
+		},
+	success: function(data) 
+		{
+
+			if(data.length>=1){
+				for(let i=0; i < data.length;i++){
+					
+					var arr = {};
+					for(key in data[i]){
+						if(needParams.indexOf(key) != -1){
+							arr[key] = data[i][key];
+						}
+					}
+					vims[i] = arr;
+				}
+			}
+			else{
+				console.log("getVIMS error!!!");
+			}
+			
+			let parentElem = document.getElementById(div_id);			
+			console.log(vims);
+
+			let _p = document.createElement('p');
+			_p.innerHTML = "Создание сервиса Internet";
+			_p.classList.add('headerMainDiv');
+			parentElem.appendChild(_p);
+
+
+			var col = 1;
+			var row = Object.keys(head).length*2;
+			let _tbl = document.createElement('table'); //table +
+			_tbl.setAttribute('border', '0');
+			_tbl.setAttribute('width', '45%');
+			for(let i = 0; i < col; i++){
+				for(let y = 0; y < row; y++){
+					let _tr = document.createElement('tr');
+					
+					let _td = document.createElement('td');
+					_td.id = 'TD_INTERNET_'+y;
+					
+					//раскидаем titles сразу.
+					if(y%2 == 0){
+						let num = y/2;
+						let title = '';
+						let i = 0;
+						for(key in head){
+							if(i == num){
+								let _p = document.createElement('p');
+								_p.id = 'P_INTERNET_'+y;
+								_p.innerHTML = head[key];
+								_p.classList.add('computeTableP');
+								_td.appendChild(_p);
+							}
+							i++;
+						}
+					}
+					else{
+						let _div = document.createElement('div');
+						_div.id = 'DIV_INT_'+y;
+						_td.appendChild(_div)
+					}
+					_tr.appendChild(_td);
+					_tbl.appendChild(_tr);
+				}
+			}
+			parentElem.appendChild(_tbl);
+			
+
+			let name_div1 = document.getElementById('DIV_INT_1');
+			let name_input = document.createElement('input');
+			name_input.id = 'input_name_internet';
+			name_input.classList.add('inputName');
+			name_div1.appendChild(name_input);
+			
+			let name_div3 = document.getElementById('DIV_INT_3');
+			let select_int_network = document.createElement('select');
+			select_int_network.id = 'select_int_network';
+			select_int_network.classList.add('selectStyle');
+			let option_int_netw = document.createElement('option');
+			option_int_netw.innerHTML = 'internal';
+			select_int_network.appendChild(option_int_netw);
+			name_div3.appendChild(select_int_network);
+
+			let name_div5 = document.getElementById('DIV_INT_5');
+			let select_ext_network = document.createElement('select');
+			select_ext_network.id = 'select_ext_network';
+			select_ext_network.classList.add('selectStyle');
+			let ortion_ext_network = document.createElement('option');
+			ortion_ext_network.innerHTML = 'external';
+			select_ext_network.appendChild(ortion_ext_network);
+			name_div5.appendChild(select_ext_network);	
+
+			let name_div7 = document.getElementById('DIV_INT_7');
+			let _select_vim = document.createElement('select');
+			_select_vim.id = 'select_vim_internet';
+			_select_vim.classList.add('selectStyle');
+			
+			for(let i=0; i < vims.length; i++){
+
+				if(vims[i]["vim_type"] != "openstack"){
+					continue;
+				}
+				else{
+
+					for(key in vims[i]){
+						if(key == 'name'){
+							let _option = document.createElement('option');
+							_option.id = 'OPT_INT_' + vims[i][key];
+						_option.innerHTML = vims[i][key]; // + '(' + vims[i]['vim_url'] + ')'
+							_select_vim.appendChild(_option);
+						}
+					}
+					name_div7.appendChild(_select_vim);	
+				}
+			}
+		
+		
+			$("#input_name_internet").keyup(function(data)
+			{
+				var curStr = $('#input_name_internet').val();
+				if(curStr.trim() !=  curStr)
+				{
+					document.getElementById("input_name_internet").value = curStr.trim();
+				}
+			});
+
+			let _butt_exec = document.createElement('button');
+			_butt_exec.id = 'execute_button_internet';
+			_butt_exec.innerHTML = 'Создать';
+			_butt_exec.classList.add('forbuttonExec');
+			parentElem.appendChild(_butt_exec);
+
+		}
+		
+});
+
+}
 
 
 function createWSandDBaaS(token){
@@ -74,6 +243,7 @@ function createWSandDBaaS(token){
 	generateDivWSDB("main_div", services, token);
 	
 }
+
 
 function generateDivWSDB(div_id, head, token)
 {
@@ -115,7 +285,7 @@ function generateDivWSDB(div_id, head, token)
 
 
 			let _p = document.createElement('p');
-			_p.innerHTML = "Создание сервиса Веб-сервер";
+			_p.innerHTML = "Создание сервиса Web-server";
 			_p.classList.add('headerMainDiv');
 			parentElem.appendChild(_p);
 
@@ -130,7 +300,7 @@ function generateDivWSDB(div_id, head, token)
 					let _tr = document.createElement('tr');
 					
 					let _td = document.createElement('td');
-					_td.id = 'TD_'+y;
+					_td.id = 'TD_WS_'+y;
 					
 					//раскидаем titles сразу.
 					if(y%2 == 0){
@@ -140,7 +310,7 @@ function generateDivWSDB(div_id, head, token)
 						for(key in head){
 							if(i == num){
 								let _p = document.createElement('p');
-								_p.id = 'P'+y;
+								_p.id = 'P_WS_'+y;
 								_p.innerHTML = head[key];
 								_p.classList.add('wsdbTableP');
 								_td.appendChild(_p);
@@ -656,7 +826,7 @@ function generateDivCompute(div_id, head, token)
 
 
 			let _p = document.createElement('p');
-			_p.innerHTML = "Создание сервиса compute";
+			_p.innerHTML = "Создание сервиса Compute";
 			_p.classList.add('headerMainDiv');
 			parentElem.appendChild(_p);
 
@@ -982,14 +1152,16 @@ function getInstances(token){
 						
 			    ///////////////////////////////////    удалить инстанс!!!!
 				
-						$(document).on('click','img[id^="TRASH_IMG_"]', function(data)
+						$('img').click(function()
 						{
+							var clickId = $(this).attr('id');
+							
+							if(clickId.indexOf("TRASH") >= 0){
 								//TODO: возможная бага. Несколько раз может вызываться так как таких ID>1!!!
 								ns_id_id = this.id;
-
+								
 								ns_id = ns_id_id.replace('TRASH_IMG_', '');
 
-								
 								$.ajax({
 								type:"POST",
 								url: "./core/engine.php",
@@ -1005,7 +1177,7 @@ function getInstances(token){
 									}
 								});
 
-							
+							}
 						});
 						
 			    ///////////////////////////////////    исследуем инстанс!!!!
@@ -1051,7 +1223,6 @@ function getInstances(token){
 		}
 	});
 }
-
 
 
 function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances)
@@ -1165,7 +1336,9 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 	
 	let creds_openstack = {
 		"devstack_114": "admin|devstack",
-		"devstack_test": "admin|labstack"
+		"devstack_test": "admin|labstack",
+		"openstack_EaaS": "admin|devstack",
+		"Openstack_EAAS": "admin|devstack"
 	}
 		
 
@@ -1226,6 +1399,10 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 		let vim_username = '';
 		let vim_tennant = vim_tenant;
 		let vim_creds = creds_openstack[vim_naming];
+		//console.log(vim_creds);
+		if(vim_creds == undefined){
+			alert('Внесите данный VIM - "'+ vim_naming + '" в список!');
+		}
 		vim_username = vim_creds.split('|')[0];
 		vim_pass = vim_creds.split('|')[1];
 
@@ -1396,39 +1573,6 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 function generateDivDry(div_id)
 {
 	let parentElem = document.getElementById(div_id);
@@ -1540,8 +1684,7 @@ else{
 				//костыль для действий!!!!
 				if(key == 'revision'){
 					url_to_metric = grafana_url + data[i]['_id'];
-					
-					_tb.innerHTML = "<a href="+url_to_metric+"><img src='../images/info.png' valign='middle' alt='Метрики' style='margin-bottom: 4px;'/></a> <img id = "+ 'TRASH_IMG_' + data[i]['_id'] +" src='../images/trash.png' valign='middle' alt='Отключить инстанс' style='cursor: pointer; margin-bottom: 4px;'/> <img id = "+ 'FOLDER_IMG_' + data[i]['_id'] +" src='../images/folder.png' valign='middle' alt='Отключить инстанс' style='cursor: pointer; margin-bottom: 4px;'/>";
+					_tb.innerHTML = "<a href="+url_to_metric+" target='_blank'><img src='../images/info.png' valign='middle' alt='Метрики' style='margin-bottom: 4px;'/></a> <img id = "+ 'TRASH_IMG_' + data[i]['_id'] +" src='../images/trash.png' valign='middle' alt='Отключить инстанс' style='cursor: pointer; margin-bottom: 4px;'/> <img id = "+ 'FOLDER_IMG_' + data[i]['_id'] +" src='../images/folder.png' valign='middle' alt='Отключить инстанс' style='cursor: pointer; margin-bottom: 4px;'/>";
 				}
 				
 				_tb.classList.add(tdClass);					
@@ -1705,8 +1848,7 @@ function formatDate(date) {
   var mm = date.getMonth() + 1;
   if (mm < 10) mm = '0' + mm;
 
-  var yy = date.getFullYear() % 100;
-  if (yy < 10) yy = '0' + yy;
+  var yy = date.getFullYear();
 
   return dd + '.' + mm + '.' + yy;
 }
@@ -1720,8 +1862,7 @@ function formatDateWithHoursMin(date) {
   var mm = date.getMonth() + 1;
   if (mm < 10) mm = '0' + mm;
 
-  var yy = date.getFullYear() % 100;
-  if (yy < 10) yy = '0' + yy;
+  var yy = date.getFullYear();
 
   var hh = date.getHours();
   if (hh < 10) hh = '0' + hh;
