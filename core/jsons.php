@@ -202,7 +202,7 @@ $nsd =
 											{
 												"constituent-base-element-id": "vyos-1",
 												"constituent-cpd-id": "vnf-internal-ext",
-												"ip-address": "192.168.233.100"
+												"ip-address": "192.168.0.1"
 											}
 										],
 										"virtual-link-profile-id": "internal"
@@ -402,9 +402,14 @@ $newVNFd =
 				"virtual-storage-desc": "storage_vm_ws",
 				"monitoring-parameter": [
 					{
-						"id": "cpu_util_ws",
-						"name": "vnf_cpu_util_ws",
-						"performance-metric": "cpu_utilization"
+						"id": "packets_sent_ws",
+						"name": "vnf_packets_sent_ws",
+						"performance-metric": "packets_sent"
+					},
+					{
+						"id": "packets_received_ws",
+						"name": "vnf_packets_received_ws",
+						"performance-metric": "packets_received"
 					},
 					{
 						"id": "mem_util_ws",
@@ -434,9 +439,14 @@ $newVNFd =
 				"virtual-storage-desc": "storage_vm_db",
 				"monitoring-parameter": [
 					{
-						"id": "cpu_util_db",
-						"name": "vnf_cpu_util_db",
-						"performance-metric": "cpu_utilization"
+						"id": "packets_sent_db",
+						"name": "vnf_packets_sent_db",
+						"performance-metric": "packets_sent"
+					},
+					{
+						"id": "packets_received_db",
+						"name": "vnf_packets_received_db",
+						"performance-metric": "packets_received"
 					},
 					{
 						"id": "mem_util_db",
@@ -502,12 +512,12 @@ $newNSd =
 				"name": "$name",
 				"virtual-link-desc": [
 					{
-						"id": "manage_ws",
+						"id": "manage_db",
 						"mgmt-network": true,
 						"vim-network-name": "$network"
 					},
 					{
-						"id": "manage_db",
+						"id": "manage_ws",
 						"mgmt-network": true,
 						"vim-network-name": "$network"
 					}
@@ -526,20 +536,20 @@ $newNSd =
 										"constituent-cpd-id": [
 											{
 												"constituent-base-element-id": "1",
-												"constituent-cpd-id": "ext_ws_vm"
-											}
-										],
-										"virtual-link-profile-id": "manage_ws"
-									},
-									{
-										"constituent-cpd-id": [
-											{
-												"constituent-base-element-id": "1",
 												"constituent-cpd-id": "ext_db_vm",
 												"ip-address": "$ipDB"
 											}
 										],
 										"virtual-link-profile-id": "manage_db"
+									},
+									{
+										"constituent-cpd-id": [
+											{
+												"constituent-base-element-id": "1",
+												"constituent-cpd-id": "ext_ws_vm"
+											}
+										],
+										"virtual-link-profile-id": "manage_ws"
 									}
 								],
 								"vnfd-id": "$vnf_name"
@@ -579,7 +589,7 @@ return $newNS;
 
 
 
-function getVNFd($name, $image, $ram, $vcpu, $storage){
+function getVNFd($name, $image, $ram, $vcpu, $storage, $cloud_config){
 
 //	$cloud_config = '';
 
@@ -634,6 +644,7 @@ $newVNFd =
 		"vdu": [
 		  {
 			"id": "ubuntu_VM",
+			"cloud-init": $cloud_config,
 			"int-cpd": [
 			  {
 				"id": "int_ubuntu_VM",

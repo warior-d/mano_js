@@ -163,7 +163,7 @@ function generateDivInternet(div_id, head, token)
 			select_int_network.id = 'select_int_network';
 			select_int_network.classList.add('selectStyle');
 			let option_int_netw = document.createElement('option');
-			option_int_netw.innerHTML = 'shared';
+			option_int_netw.innerHTML = 'internal';
 			select_int_network.appendChild(option_int_netw);
 			name_div3.appendChild(select_int_network);
 
@@ -909,6 +909,9 @@ function createCompute(token){
 
 function generateDivCompute(div_id, head, token)
 {
+	
+
+	
 	var vims = new Array();
 	var needParams = ["vim_url", "name", "vim_type", "_id"];
 	
@@ -1044,13 +1047,13 @@ function generateDivCompute(div_id, head, token)
 			let select_stor = document.createElement('select');
 			select_stor.id = 'select_stor';
 			select_stor.classList.add('selectStyle');
-			let stor5 = document.createElement('option');
+			//let stor5 = document.createElement('option');
 			let stor10 = document.createElement('option');
 			let stor15 = document.createElement('option');
-			stor5.innerHTML = '5';
+			//stor5.innerHTML = '5';
 			stor10.innerHTML = '10';
 			stor15.innerHTML = '15';
-			select_stor.appendChild(stor5);
+			//select_stor.appendChild(stor5);
 			select_stor.appendChild(stor10);
 			select_stor.appendChild(stor15);
 			name_div9.appendChild(select_stor);	
@@ -1061,7 +1064,7 @@ function generateDivCompute(div_id, head, token)
 			select_net.classList.add('selectStyle');
 			let netShared = document.createElement('option');
 			let netPublic = document.createElement('option');
-			netShared.innerHTML = 'shared';
+			netShared.innerHTML = 'internal';
 			netPublic.innerHTML = 'external';
 			select_net.appendChild(netShared);
 			select_net.appendChild(netPublic);
@@ -1138,6 +1141,13 @@ function generateDivCompute(div_id, head, token)
 				
 				if(instanceName != ''){
 					
+					let alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890',
+					pass_to_vnf = '';
+					for(let i = 0; i < 4; i++){
+					pass_to_vnf += alphabet[Math.round(Math.random() * (alphabet.length - 1))];
+					}
+					console.log(pass_to_vnf);
+					
 					//////////////////////////////////////////// создадим VNFd
 					$.ajax({
 						type:"POST",
@@ -1152,7 +1162,8 @@ function generateDivCompute(div_id, head, token)
 							vCPU: qntvCPU,
 							storage: qntStorage,
 							network: networkName,
-							vim: vim_id
+							vim: vim_id,
+							pass: pass_to_vnf
 							},
 						success: function(data) 
 							{
@@ -1271,74 +1282,160 @@ function getInstances(token){
 				
 				//1//////////////////////////////// "code": "UNAUTHORIZED", ////////////////////////
 						generateDivInfo("main_div", dataInstances, vims_accounts);
+
+						let items = {};
+						let current = 0;
+						for(let i = 0; i < dataInstances.length; i++){
+							
+							if((dataInstances[i]["nsState"] != "READY") && (dataInstances[i]["nsState"] != "BROKEN")){
+								let item = {};
+								item.id = dataInstances[i]["_id"];
+								item.state = dataInstances[i]["nsState"];
+								items[current] = item;
+								current = current + 1;
+							}
+						}
+
+						console.log('items');
+						console.log(items);
+						console.log('dataInstances');
+						console.log(dataInstances);
 						
+						var size = Object.keys(items).length;
+						
+						if(size > 0){
+							console.log("существуют не READY");
+							(function worker() {
+							  $.ajax({
+								url: './core/engine.php', 
+								dataType: "json",
+								data: {
+									action: "getNsStates",
+									token: token,
+									obj: items
+								},							
+								success: function(data) 
+								{
+								  let flag = 0;
+								  //а есть ли элементы в статусе не ready???
+								  for(let i = 0; i < data.length; i++){
+									  
+									  let state_inst = data[i]["state"];
+									  let uid_inst = data[i]["id"];
+									  let need_id_td = document.getElementById('STATUS_TD_' + uid_inst);
+									  let tdData = '';
+									  let tdClass = '';
+									  
+									  if(state_inst != "READY"){
+
+										 flag = flag + 1;
+
+										 if(state_inst == 'BUILDING'){
+											tdData = 'Создается';
+											tdClass = 'tdMainDivStateBuild';
+											need_id_td.innerHTML = "<img src='../images/prel_yellow.gif' valign='middle' style='margin-bottom: 4px;'/>";
+											
+										 }
+
+										 else if(state_inst == 'TERMINATING'){
+											tdData = 'Удаляется';
+											tdClass = 'tdMainDivStateTerminating';	
+											need_id_td.innerHTML = "<img src='../images/prel_red.gif' valign='middle' style='margin-bottom: 4px;'/>";
+										 }
+										 else if(state_inst == 'BROKEN'){
+											tdData = 'Ошибка';
+											tdClass = 'tdMainDivStateBroken';
+											need_id_td.innerHTML = "<img src='../images/not_icon.png' valign='middle' style='margin-bottom: 4px;'/>";
+											flag = 0;
+										 }	
+										need_id_td.innerHTML += ' ' + tdData;
+										need_id_td.classList.add(tdClass);
+										
+									  }
+										 else if(state_inst == 'READY'){
+											tdData = 'Активен';
+											tdClass = 'tdMainDivStateReady';
+											need_id_td.innerHTML = "<img src='../images/ok_icon.png' valign='middle' style='margin-bottom: 4px;'/>";				
+										 	need_id_td.innerHTML += ' ' + tdData;
+											need_id_td.classList.add(tdClass);
+										 }
+								  }
+								  
+								  if(flag == 0){
+									 location.reload();
+								  }
+								  
+								},
+								complete: function() {
+								  setTimeout(worker, 2000);
+								}
+							  });
+							})();
+						}
+
+
 			    ///////////////////////////////////    удалить инстанс!!!!
 				
 						$('img').click(function()
 						{
+							
 							var clickId = $(this).attr('id');
 							
-							if(clickId.indexOf("TRASH") >= 0){
-								//TODO: возможная бага. Несколько раз может вызываться так как таких ID>1!!!
-								ns_id_id = this.id;
+							if(clickId != undefined){
+
+								if(clickId.indexOf("TRASH") >= 0){
+									//TODO: возможная бага. Несколько раз может вызываться так как таких ID>1!!!
+									ns_id_id = this.id;
+									
+									ns_id = ns_id_id.replace('TRASH_IMG_', '');
+
+									$.ajax({
+									type:"POST",
+									url: "./core/engine.php",
+									dataType: "json",
+									data: {
+										action: "deleteInstance",
+										token: token,
+										instance_id: ns_id
+										},
+									success: function(data) 
+										{						
+											location.reload();
+										}
+									});
+								}
+								else if(clickId.indexOf("FOLDER") >= 0){
+									
+			    ///////////////////////////////////    исследуем инстанс!!!!	
+				
+									ns_id_id = this.id;
+
+									ns_id = ns_id_id.replace('FOLDER_IMG_', '');
+									
+									$.ajax({
+									type:"POST",
+									url: "./core/engine.php",
+									dataType: "json",
+									data: {
+										action: "getVNFR",
+										token: token
+										},
+									success: function(vnfrs) 
+										{
+											generateInfoInstance("main_div", ns_id, vnfrs, vims_accounts, dataInstances);
+										}
+									});
+									
+								}
 								
-								ns_id = ns_id_id.replace('TRASH_IMG_', '');
-
-								$.ajax({
-								type:"POST",
-								url: "./core/engine.php",
-								dataType: "json",
-								data: {
-									action: "deleteInstance",
-									token: token,
-									instance_id: ns_id
-									},
-								success: function(data) 
-									{						
-										location.reload();
-									}
-								});
-
 							}
 						});
 						
-			    ///////////////////////////////////    исследуем инстанс!!!!
-				
-				
-						$('img').click(function()
-						{
-							
-							var clickId = $(this).attr('id');
-							
-							if(clickId.indexOf("FOLDER") >= 0){
-
-								ns_id_id = this.id;
-
-								ns_id = ns_id_id.replace('FOLDER_IMG_', '');
-								
-								
-								$.ajax({
-								type:"POST",
-								url: "./core/engine.php",
-								dataType: "json",
-								data: {
-									action: "getVNFR",
-									token: token
-									},
-								success: function(vnfrs) 
-									{						
-										//console.log(vnfrs);
-										generateInfoInstance("main_div", ns_id, vnfrs, vims_accounts, dataInstances);
-									}
-								});
-
-							}	
-							
-						});
 						
 						
-					}	
 						
+						
+					}
 					});	
 						
 
@@ -1351,10 +1448,8 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 {
 	let parentElem = document.getElementById(div_id);
 	
-	console.log(ns_id);
 	console.log("vnfrs");
 	console.log(vnfrs);
-	//console.log(vims_accounts);
 	console.log("dataInstances");
 	console.log(dataInstances);
 
@@ -1388,6 +1483,7 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 	let vim_url = '';
 	let vim_naming = '';
 	let vim_tenant = '';
+	let password_instance = '12345';
 
 	for(let i = 0; i < dataInstances.length; i++){
 		
@@ -1395,6 +1491,10 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 			
 			vim_url = dataInstances[i]["vim_url"];
 			vim_tenant = dataInstances[i]["vim_tenant"];
+			
+			if(dataInstances[i]['vnfd-id']['0']['password'] != undefined){
+				password_instance = dataInstances[i]['vnfd-id']['0']['password'];
+			}
 			
 			for(key in head){
 				params[key] = dataInstances[i][key];
@@ -1482,20 +1582,12 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 			"ip": "",
 			"console": "",
 			"username": "ubuntu",
-			"password": ""
+			"password": password_instance
 		};		
 		
-		let console_ = 'url';
-		let console_url = '';
-		let console_port = '6080';
-		let console_token = 'token';
 		let console_name_machine = '';
 		let console_id_machine = '';
 		
-		var reg = /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/;
-		var host = vim_url.match(reg);
-		
-		console_url = 'http://' + host[0];
 		
 		for(let i = 0; i < vnfrs.length; i++){
 
@@ -1896,6 +1988,8 @@ else{
 				}
 				else if(key == 'nsState'){
 					
+					_tb.id = 'STATUS_TD_' + data[i]["_id"];
+					
 					if(tdData == 'BUILDING'){
 						tdData = 'Создается';
 						tdClass = 'tdMainDivStateBuild';
@@ -1925,7 +2019,7 @@ else{
 				//костыль для действий!!!!
 				if(key == 'revision'){
 					url_to_metric = grafana_url + data[i]['_id'];
-					_tb.innerHTML = "<a href="+url_to_metric+" target='_blank'><img src='../images/info.png' valign='middle' alt='Метрики' style='margin-bottom: 4px;'/></a> <img id = "+ 'TRASH_IMG_' + data[i]['_id'] +" src='../images/trash.png' valign='middle' alt='Отключить инстанс' style='cursor: pointer; margin-bottom: 4px;'/> <img id = "+ 'FOLDER_IMG_' + data[i]['_id'] +" src='../images/folder.png' valign='middle' alt='Отключить инстанс' style='cursor: pointer; margin-bottom: 4px;'/>";
+					_tb.innerHTML = "<a href="+url_to_metric+" target='_blank'><img src='../images/metrics.png' valign='middle' alt='Метрики' style='margin-bottom: 4px;'/></a> <img id = "+ 'TRASH_IMG_' + data[i]['_id'] +" src='../images/trash.png' valign='middle' alt='Отключить инстанс' style='cursor: pointer; margin-bottom: 4px;'/> <img id = "+ 'FOLDER_IMG_' + data[i]['_id'] +" src='../images/folder.png' valign='middle' alt='Отключить инстанс' style='cursor: pointer; margin-bottom: 4px;'/>";
 				}
 				
 				_tb.classList.add(tdClass);					
