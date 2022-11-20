@@ -10,6 +10,7 @@ define('POST_NS','/nslcm/v1/ns_instances_content');
 define('DELETE_NS','/nslcm/v1/ns_instances_content/');
 define('GET_VNFR','/nslcm/v1/vnf_instances');
 define('GET_VNFDS', '/vnfpkgm/v1/vnf_packages');
+define('CREATE_VIM', '/admin/v1/vims');
 //
 
  if(!empty($_REQUEST)){
@@ -19,6 +20,65 @@ define('GET_VNFDS', '/vnfpkgm/v1/vnf_packages');
 	}
 	die();
 }
+
+
+
+
+function createEDGE()
+{
+	include "jsons.php";
+							
+	$token = $_REQUEST['token'];
+	$name = $_REQUEST['name']; 
+	$url_edge = $_REQUEST['url_edge'];
+	$tenant_name = $_REQUEST['tenant_name'];
+	$user_edge = $_REQUEST['user_edge'];
+	$pass_edge = $_REQUEST['pass_edge'];
+
+	$nsd = getEDGE($name, $url_edge, $tenant_name, $user_edge, $pass_edge);	
+
+	//print_r($nsd);
+
+	$ch = curl_init(API_MANO_BASE.CREATE_VIM);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8',
+	'Accept: application/json; charset=utf-8', 'Authorization: Bearer '.$token));
+	curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $nsd); 
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($ch, CURLOPT_HEADER, "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)");
+	$id_nsd = curl_exec($ch);
+	$status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+	curl_close($ch);
+	echo $id_nsd;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

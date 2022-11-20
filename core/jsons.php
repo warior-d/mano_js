@@ -1,6 +1,29 @@
 <?php
 
 
+function getEDGE($name, $url_edge, $tenant_name, $user_edge, $pass_edge){
+	
+$edge = 
+<<<EDGE
+{
+  "name": "$name",
+  "vim_type": "openstack",
+  "vim_url": "$url_edge",
+  "vim_tenant_name": "$tenant_name",
+  "vim_user": "$user_edge",
+  "vim_password": "$pass_edge",
+  "config": {
+    "security_groups": "default"
+  }
+}
+EDGE;
+	
+return $edge;
+}
+
+
+
+
 function getVNFdInternet($name, $cloud_config){
 
 //	$cloud_config = '';

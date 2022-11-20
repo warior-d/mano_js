@@ -44,9 +44,181 @@ $(document).ready(function(){
 		getInstances(token);
 	});	
 
+	$("#div_edge").click(function() {
+		createEDGE(token);
+	});
 
 
 });
+
+
+function createEDGE(token){
+	
+	var mainDiv = document.getElementById("main_div");
+	mainDiv.innerHTML = '';
+	document.getElementById("roadMap").innerHTML = 'EaaS &nbsp &nbsp>&nbsp &nbsp  Менеджмент EDGE';
+	document.getElementById("placeMap").innerHTML = 'Создание EDGE';
+	
+	var services = new Object();
+	services = {
+		"name": "Название сервиса",
+		"vim_url": "URL аутентификации VIM",
+		"vim_tenant_name": "Название tenant",
+		"vim_user": "Имя пользователя VIM",
+		"vim_password": "Пароль VIM",
+		"vim_password": "Пароль VIM",
+	};
+	
+	generateDivEDGE("main_div", services, token);
+}
+
+function generateDivEDGE(div_id, head, token)
+{
+	let parentElem = document.getElementById(div_id);
+	
+			let _p = document.createElement('p');
+			_p.innerHTML = "Создание нового EDGE";
+			_p.classList.add('headerMainDiv');
+			parentElem.appendChild(_p);
+			
+			var col = 1;
+			var row = Object.keys(head).length*2;
+			let _tbl = document.createElement('table'); //table +
+			_tbl.setAttribute('border', '0');
+			_tbl.setAttribute('width', '45%');
+			for(let i = 0; i < col; i++){
+				for(let y = 0; y < row; y++){
+					let _tr = document.createElement('tr');
+					
+					let _td = document.createElement('td');
+					_td.id = 'TD_INTERNET_'+y;
+					
+					//раскидаем titles сразу.
+					if(y%2 == 0){
+						let num = y/2;
+						let title = '';
+						let i = 0;
+						for(key in head){
+							if(i == num){
+								let _p = document.createElement('p');
+								_p.id = 'P_EDGE_'+y;
+								_p.innerHTML = head[key];
+								_p.classList.add('computeTableP');
+								_td.appendChild(_p);
+							}
+							i++;
+						}
+					}
+					else{
+						let _div = document.createElement('div');
+						_div.id = 'DIV_EDGE_'+y;
+						_td.appendChild(_div)
+					}
+					_tr.appendChild(_td);
+					_tbl.appendChild(_tr);
+				}
+			}
+			parentElem.appendChild(_tbl);
+
+
+			let name_div1 = document.getElementById('DIV_EDGE_1');
+			let name_input = document.createElement('input');
+			name_input.id = 'input_name_edge';
+			name_input.classList.add('inputName');
+			name_div1.appendChild(name_input);
+
+			let name_div2 = document.getElementById('DIV_EDGE_3');
+			let name_input2 = document.createElement('input');
+			name_input2.id = 'input_url_edge';
+			name_input2.classList.add('inputName');
+			name_div2.appendChild(name_input2);
+			
+			let name_div3 = document.getElementById('DIV_EDGE_5');
+			let name_input3 = document.createElement('input');
+			name_input3.id = 'input_tenant_edge';
+			name_input3.classList.add('inputName');
+			name_div3.appendChild(name_input3);			
+
+			let name_div4 = document.getElementById('DIV_EDGE_7');
+			let name_input4 = document.createElement('input');
+			name_input4.id = 'input_user_edge';
+			name_input4.classList.add('inputName');
+			name_div4.appendChild(name_input4);		
+
+			let name_div5 = document.getElementById('DIV_EDGE_9');
+			let name_input5 = document.createElement('input');
+			name_input5.id = 'input_passw_edge';
+			name_input5.classList.add('inputName');
+			name_input5.setAttribute('type', 'password');
+			name_div5.appendChild(name_input5);	
+			
+			$("#input_name_internet").keyup(function(data)
+			{
+				var curStr = $('#input_name_internet').val();
+				if(curStr.trim() !=  curStr)
+				{
+					document.getElementById("input_name_internet").value = curStr.trim();
+				}
+			});
+
+
+			let _butt_exec = document.createElement('button');
+			_butt_exec.id = 'execute_button_edge';
+			_butt_exec.innerHTML = 'Создать';
+			_butt_exec.classList.add('forbuttonExec');
+			parentElem.appendChild(_butt_exec);
+
+
+
+			
+			$("#execute_button_edge").click(function() {
+				
+				let instanceName = $('#input_name_edge').val();
+
+				let url_edge = $('#input_url_edge').val();
+				
+				let tenant_name =  $('#input_tenant_edge').val();
+
+				let user_edge = $('#input_user_edge').val();
+				
+				let pass_edge = $('#input_passw_edge').val();
+				
+
+			
+				
+				
+				if(instanceName != '' && url_edge != '' && tenant_name != ''  && user_edge != '' && pass_edge != ''){
+					
+					$.ajax({
+						type:"POST",
+						url: "./core/engine.php",
+						dataType: "json",
+						data: {
+							action: "createEDGE",
+							name: instanceName,
+							url_edge: url_edge,
+							tenant_name: tenant_name,
+							user_edge: user_edge,
+							pass_edge: pass_edge,
+							token: token
+							},
+						success: function(data) 
+							{
+								console.log(data);
+								getInstances(token);
+							}
+					});
+				}
+				else{
+					alert(" Введены не все данные ");
+				}				
+			});
+
+			
+			
+
+			
+}
 
 
 
@@ -760,7 +932,7 @@ let paramsDB = [{
 				}	
 
 				//TODO
-				let ip_database = "10.0.69.127";
+				let ip_database = "10.0.69.134";
 				
 				
 				if(instanceName != '' && resoursesWS != '' && resoursesDB != ''){
@@ -1141,7 +1313,7 @@ function generateDivCompute(div_id, head, token)
 				
 				if(instanceName != ''){
 					
-					let alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890',
+					let alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456789',
 					pass_to_vnf = '';
 					for(let i = 0; i < 4; i++){
 					pass_to_vnf += alphabet[Math.round(Math.random() * (alphabet.length - 1))];
@@ -1325,7 +1497,8 @@ function getInstances(token){
 									  let need_id_td = document.getElementById('STATUS_TD_' + uid_inst);
 									  let tdData = '';
 									  let tdClass = '';
-									  
+									  //TODO - проверить, есть ли элемент!
+									  if(need_id_td != undefined){
 									  if(state_inst != "READY"){
 
 										 flag = flag + 1;
@@ -1359,6 +1532,10 @@ function getInstances(token){
 										 	need_id_td.innerHTML += ' ' + tdData;
 											need_id_td.classList.add(tdClass);
 										 }
+									  }
+									  else{
+										 location.reload(); 
+									  }
 								  }
 								  
 								  if(flag == 0){
@@ -1561,7 +1738,8 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 		"devstack_test": "admin|labstack",
 		"openstack_EaaS": "admin|devstack",
 		"Openstack_EAAS": "admin|devstack",
-		"openstack_WORK": "admin|labstack"
+		"openstack_WORK": "admin|labstack",
+		"openstack_EAAS": "admin|devstack",
 	}
 		
 
