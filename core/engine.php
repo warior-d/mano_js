@@ -11,6 +11,7 @@ define('DELETE_NS','/nslcm/v1/ns_instances_content/');
 define('GET_VNFR','/nslcm/v1/vnf_instances');
 define('GET_VNFDS', '/vnfpkgm/v1/vnf_packages');
 define('CREATE_VIM', '/admin/v1/vims');
+define('GET_TOKEN_INFO', '/admin/v1/tokens/');
 //
 
  if(!empty($_REQUEST)){
@@ -21,7 +22,20 @@ define('CREATE_VIM', '/admin/v1/vims');
 	die();
 }
 
-
+function getTokenInfo()
+{
+	$token = $_REQUEST['token'];
+	
+	$ch = curl_init(API_MANO_BASE.GET_TOKEN_INFO.$token);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json',
+	'Accept: application/json', 'Connection: keep-alive', 'Authorization: Bearer '.$token));
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($ch, CURLOPT_HEADER, "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)");
+	$res = curl_exec($ch);
+	curl_close($ch);
+	echo $res;
+}
 
 
 function createEDGE()

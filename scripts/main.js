@@ -4,52 +4,111 @@ $(document).ready(function(){
 	var mainDiv = document.getElementById("main_div");
 	// сначала - извлечем токен из localStorage!
 	var token = localStorage.getItem('MANOtokenID');
-
-	// Заполним инстансы, если есть!
-	getInstances(token);
-
-
-	//по-умолчанию мы показывает Ресурсы!
-	var p_road = document.getElementById("roadMap");
-	var p_place = document.getElementById("placeMap");
+	//console.log(token);
 	
-	p_road.innerHTML = 'EaaS &nbsp &nbsp>&nbsp &nbsp  Дашборд';
-	p_place.innerHTML = 'Мои сервисы';
+	if(token == null || token == undefined || token == ''){
+		
+		console.log('get out. NOW');
+		
+	}
+	else{
+		
+	$.ajax({
+	type:"POST",
+	url: "./core/engine.php",
+	dataType: "json",
+	data: {
+		action: "getTokenInfo",
+		token: token
+		},
+	success: function(data) 
+		{
+			
+			let flag_fail = false;
+			
+			
+			for(let i = 0; i < data.length; i ++){
+				for(key in data[i]){
+					if(key == 'code' && data[i][key] == 'UNAUTHORIZED'){
+						flag_fail = true;
+					}
+				}
+			}
+			
+			if(flag_fail){
+				console.log('get out. LATE');
+				getOut();	
+			}
+			else{
+				// Заполним инстансы, если есть!
+				getInstances(token);
 
 
-	//создать compute
-	$("#div_compute").click(function() {
-		
-		createCompute(token);
-		
-	});	
+				//по-умолчанию мы показывает Ресурсы!
+				var p_road = document.getElementById("roadMap");
+				var p_place = document.getElementById("placeMap");
+				
+				p_road.innerHTML = 'EaaS &nbsp &nbsp>&nbsp &nbsp  Дашборд';
+				p_place.innerHTML = 'Мои сервисы';
+
+
+				//создать compute
+				$("#div_compute").click(function() {
+					
+					createCompute(token);
+					
+				});	
+				
+				//создать ws
+				$("#div_ws").click(function() {
+					
+					createWSandDBaaS(token);
+
+				});	
+
+				//создать dbas
+				$("#div_internet").click(function() {
+					
+					createInternet(token);
+
+				});	
+				
+				
+				$("#div_dashboard").click(function() {
+					
+					getInstances(token);
+					
+				});	
+
+				$("#div_edge").click(function() {
+					
+					createEDGE(token);
+					
+				});
 	
-	//создать ws
-	$("#div_ws").click(function() {
-		
-		createWSandDBaaS(token);
-
-	});	
-
-	//создать dbas
-	$("#div_internet").click(function() {
-		
-		createInternet(token);
-		console.log("internet");
-
-	});	
-	
-	
-	$("#div_dashboard").click(function() {
-		getInstances(token);
-	});	
-
-	$("#div_edge").click(function() {
-		createEDGE(token);
+				
+			}
+			
+			
+		}
 	});
-
+	}
+	
 
 });
+
+function getOut(){
+	
+	localStorage.setItem('MANOtokenID', '');
+	
+	alert(' Токен не валиден. Вы будете перенаправлены на страницу логина! ');
+	
+	window.open('http://10.0.69.118/login.php', '_self', false);
+	
+}
+
+
+//############################       EDGE
 
 
 function createEDGE(token){
@@ -233,6 +292,9 @@ function generateDivEDGE(div_id, head, token)
 			
 }
 
+
+
+//############################       Internet
 
 
 function createInternet(token){
@@ -517,6 +579,9 @@ function generateDivInternet(div_id, head, token)
 });
 
 }
+
+
+//############################       WSDB
 
 
 function createWSandDBaaS(token){
@@ -1057,11 +1122,7 @@ let paramsDB = [{
 }
 
 
-
-
-
-
-
+//############################       COMPUTE
 
 
 function createCompute(token){
@@ -1429,8 +1490,7 @@ function generateDivCompute(div_id, head, token)
 }
 
 
-
-
+//############################       INSTANCES
 
 
 function getInstances(token){
@@ -2092,13 +2152,6 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 	}
 	
 }
-
-
-
-
-
-
-
 
 
 
