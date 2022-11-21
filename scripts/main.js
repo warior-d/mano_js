@@ -61,12 +61,12 @@ function createEDGE(token){
 	
 	var services = new Object();
 	services = {
-		"name": "Название сервиса",
+		"name": "Имя EDGE",
 		"vim_url": "URL аутентификации VIM",
-		"vim_tenant_name": "Название tenant",
+		"vim_tenant_name": "Имя tenant",
 		"vim_user": "Имя пользователя VIM",
 		"vim_password": "Пароль VIM",
-		"vim_password": "Пароль VIM",
+		"vim_type": "Тип VIM",
 	};
 	
 	generateDivEDGE("main_div", services, token);
@@ -151,6 +151,19 @@ function generateDivEDGE(div_id, head, token)
 			name_input5.classList.add('inputName');
 			name_input5.setAttribute('type', 'password');
 			name_div5.appendChild(name_input5);	
+
+			let name_div6 = document.getElementById('DIV_EDGE_11');
+			let select_vim_type = document.createElement('select');
+			select_vim_type.id = 'select_vim_type';
+			select_vim_type.classList.add('selectStyle');
+			let option_vim_type = document.createElement('option');
+			option_vim_type.innerHTML = 'openstack';
+			let option_vim_type2 = document.createElement('option');
+			option_vim_type2.innerHTML = 'k8s';
+			select_vim_type.appendChild(option_vim_type);
+			select_vim_type.appendChild(option_vim_type2);
+			name_div6.appendChild(select_vim_type);	
+
 			
 			$("#input_name_internet").keyup(function(data)
 			{
@@ -231,10 +244,10 @@ function createInternet(token){
 	
 	var services = new Object();
 	services = {
-		"name": "Название сервиса",
+		"name": "Имя сервиса",
 		"internal_network": "Внутренняя сеть",
 		"external_network": "Внешняя сеть",
-		"VIM": "Площадка"
+		"VIM": "Сайт EDGE"
 	};
 	
 	generateDivInternet("main_div", services, token);
@@ -514,13 +527,13 @@ function createWSandDBaaS(token){
 	
 	var services = new Object();
 	services = {
-		"name": "Название сервиса",
+		"name": "Имя сервиса",
 		"image_ws": "Образ операционной системы Веб-сервера",
 		"ws_basket": "Шаблон ресурсов веб-сервера",
 		"image_db": "Образ операционной системы БД",
 		"db_basket": "Шаблон ресурсов базы данных",
 		"network": "Сеть",
-		"VIM": "Площадка",
+		"VIM": "Сайт EDGE",
 	};
 	
 	generateDivWSDB("main_div", services, token);
@@ -933,7 +946,7 @@ let paramsDB = [{
 
 				//TODO
 				let ip_database = "10.0.69.134";
-				
+				let ip_web_server = "10.0.69.130";
 				
 				if(instanceName != '' && resoursesWS != '' && resoursesDB != ''){
 					
@@ -978,6 +991,7 @@ let paramsDB = [{
 											name: instanceName,
 											token: token,
 											ipDB: ip_database,
+											ip_web_server: ip_web_server,
 											network: networkName,
 											vim: vim_id
 											},
@@ -1058,13 +1072,13 @@ function createCompute(token){
 	document.getElementById("placeMap").innerHTML = 'Создание сервиса';
 	var services = new Object();
 	services = {
-		"name": "Название сервиса",
+		"name": "Имя сервиса",
 		"image": "Образ операционной системы",
 		"RAM": "Оперативная память, Gb",
 		"vCPU": "Количество vCPU",
 		"storage": "Место на диске, Gb",
 		"network": "Сеть",
-		"VIM": "Площадка",
+		"VIM": "Сайт EDGE",
 	};
 	
 	//let vims = new Array();
@@ -1635,11 +1649,11 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 	document.getElementById("main_div").innerHTML = '';
 
 	var head = {
-		"_id": "ID сервиса",
+		"_id": "ID инстанса",
 		"name": "Название",
 		"description": "Тип сервиса",
 		"datacenter_name": "Площадка",
-		"nsState": "Статус сервиса",
+		"nsState": "Статус инстанса",
 		"create-time": "Дата создания"
 	};
 	
@@ -1740,6 +1754,10 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 		"Openstack_EAAS": "admin|devstack",
 		"openstack_WORK": "admin|labstack",
 		"openstack_EAAS": "admin|devstack",
+		"EDGE_ONE": "admin|labstack",
+		"EDGE_1": "admin|labstack",
+		"EDGE_2": "admin|devstack",
+		"EDGE_TWO": "admin|devstack",
 	}
 		
 
@@ -2113,9 +2131,10 @@ else{
 	//console.log(data);
 	var head = {
 		//"_id": "ID сервиса",
-		"name": "Название",
+		"name": "Имя инстанса",
 		"description": "Тип сервиса",
-		"datacenter_name": "Площадка",
+		"datacenter_name": "Сайт EDGE",
+		"vim_type": "Тип EDGE",
 		"nsState": "Статус",
 		"create-time": "Дата создания",
 		"revision": "Действия"
@@ -2242,7 +2261,7 @@ else{
 			let _tr_head = document.createElement('tr');
 				
 				let td_id_name = document.createElement('td');
-				td_id_name.innerHTML = 'Площадка';
+				td_id_name.innerHTML = 'Сайт EDGE';
 				td_id_name.classList.add('headerResoTable');
 				
 				let td_id_attr = document.createElement('td');
@@ -2250,13 +2269,15 @@ else{
 				td_id_attr.setAttribute('colspan', '2');
 				td_id_attr.classList.add('tdMainDivReso');
 				
-			_tr_head.appendChild(td_id_name);	
-			_tr_head.appendChild(td_id_attr);	
+			_tr_head.appendChild(td_id_name);
+			_tr_head.appendChild(td_id_attr);
+			
+
 			
 			let _tr_url = document.createElement('tr');
 				
 				let td_url_name = document.createElement('td');
-				td_url_name.innerHTML = 'URL';
+				td_url_name.innerHTML = 'Auth URL';
 				td_url_name.classList.add('headerResoTable');
 				
 				let td_url_attr = document.createElement('td');
@@ -2344,6 +2365,19 @@ else{
 			tbl_id.appendChild(_tr_vCPU);
 			tbl_id.appendChild(_tr_RAM);
 			tbl_id.appendChild(_tr_storage);
+			
+			if(vim_accounts[i]["resources"]["compute"]["vcpus"]["used"] == null){
+				
+				td_vCPU_attr.innerHTML = "<img src='../images/prel_vim.gif' valign='middle' alt='Метрики' style='margin-bottom: 4px;'/></img>" + '  информация обновляется';	
+				td_vCPU_txt.innerHTML = '';
+	
+				td_RAM_attr.innerHTML = "<img src='../images/prel_vim.gif' valign='middle' alt='Метрики' style='margin-bottom: 4px;'/></img>" + '  информация обновляется';				
+				td_RAM_txt.innerHTML = '';
+
+
+				td_sto_attr.innerHTML = "<img src='../images/prel_vim.gif' valign='middle' alt='Метрики' style='margin-bottom: 4px;'/></img>" + '  информация обновляется';		
+				td_sto_txt.innerHTML = '';	
+			}
 			
 			parentElem.appendChild(tbl_id);	
 		}

@@ -518,7 +518,7 @@ return $newVNFd;
 }
 
 
-function getNSdWSDB($name, $vnf_name, $network, $ipDB){
+function getNSdWSDB($name, $vnf_name, $network, $ipDB, $ipWS){
 
 //	$cloud_config = '';
 
@@ -569,7 +569,8 @@ $newNSd =
 										"constituent-cpd-id": [
 											{
 												"constituent-base-element-id": "1",
-												"constituent-cpd-id": "ext_ws_vm"
+												"constituent-cpd-id": "ext_ws_vm",
+												"ip-address": "$ipWS"
 											}
 										],
 										"virtual-link-profile-id": "manage_ws"

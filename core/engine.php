@@ -380,6 +380,7 @@ function createVNFDwsdb()
 	$cloud_config = '';
 	$ipDB = $_REQUEST['ipDB'];
 
+
 	$vnfd_name = $name.'_vnf';
 	
 
@@ -401,7 +402,7 @@ LL;
 	
 	$cloud_config = json_encode($cld);
 	
-    $vnfd = getVNFdWSDB($vnfd_name, $imageWS, $imageDB, $ramWS, $vcpuWS, $storageWS, $ramDB, $vcpuDB, $storageDB, $ipDB, $cloud_config);
+    $vnfd = getVNFdWSDB($vnfd_name, $imageWS, $imageDB, $ramWS, $vcpuWS, $storageWS, $ramDB, $vcpuDB, $storageDB, $ipDB, $cloud_config, $ipWS);
 
 	$ch = curl_init(API_MANO_BASE.POST_VNFD);
 	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Connection: keep-alive',
@@ -427,10 +428,11 @@ function createNSDwsdb()
 	$network = $_REQUEST['network'];
 	$ipDB = $_REQUEST['ipDB'];
 	$vim = $_REQUEST['vim'];
+	$ipWS = $_REQUEST['ip_web_server'];
 
 	$vnfd_name = $name.'_vnf';
 	$nsd_name = $name.'_ns';
-	$nsd = getNSdWSDB($nsd_name, $vnfd_name, $network, $ipDB);	
+	$nsd = getNSdWSDB($nsd_name, $vnfd_name, $network, $ipDB, $ipWS);	
 
 	$ch = curl_init(API_MANO_BASE.POST_NSD);
 	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8',
@@ -678,7 +680,7 @@ function getInstancesAndVims()
 	$decoded_json = json_decode($res, true);
 	
 	$arrVims = [];
-	$needed_vim_params = ["_id","name","vim_url","resources","vim_tenant_name"];
+	$needed_vim_params = ["_id","name","vim_url","resources","vim_tenant_name", "vim_type"];
 	
 	for($i = 0; $i < count($decoded_json); $i++){
 		foreach($decoded_json[$i] as $key=>$value){
@@ -710,6 +712,7 @@ function getInstancesAndVims()
 								$decoded_json_nss[$i]["vim_resources"] = $arrVims[$y]["resources"];
 								$decoded_json_nss[$i]["vim_url"] = $arrVims[$y]["vim_url"];
 								$decoded_json_nss[$i]["vim_tenant"] = $arrVims[$y]["vim_tenant_name"];
+								$decoded_json_nss[$i]["vim_type"] = $arrVims[$y]["vim_type"];
 						}
 					}
 				}
