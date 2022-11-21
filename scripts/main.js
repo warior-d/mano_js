@@ -9,10 +9,11 @@ $(document).ready(function(){
 	if(token == null || token == undefined || token == ''){
 		
 		console.log('get out. NOW');
+		getOut();
 		
 	}
 	else{
-		
+
 	$.ajax({
 	type:"POST",
 	url: "./core/engine.php",
@@ -26,15 +27,16 @@ $(document).ready(function(){
 			
 			let flag_fail = false;
 			
-			
-			for(let i = 0; i < data.length; i ++){
-				for(key in data[i]){
-					if(key == 'code' && data[i][key] == 'UNAUTHORIZED'){
+
+
+				for(key in data){
+					if(key == 'code' && data[key] == 'UNAUTHORIZED'){
+						console.log("change");
 						flag_fail = true;
 					}
 				}
-			}
-			
+
+
 			if(flag_fail){
 				console.log('get out. LATE');
 				getOut();	
