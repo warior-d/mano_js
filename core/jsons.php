@@ -125,38 +125,6 @@ $newVNFd =
 						]
 					}
 				],
-				"monitoring-parameter": [
-					{
-						"id": "vyos_cpu_util",
-						"name": "vyos_cpu_util",
-						"performance-metric": "cpu_utilization"
-					},
-					{
-						"id": "vyos_memory_util",
-						"name": "vyos_memory_util",
-						"performance-metric": "average_memory_utilization"
-					},
-					{
-						"id": "vyos_packets_sent",
-						"name": "vyos_packets_sent",
-						"performance-metric": "packets_sent"
-					},
-					{
-						"id": "vyos_packets_received",
-						"name": "vyos_packets_received",
-						"performance-metric": "packets_received"
-					},
-					{
-						"id": "vyos_packets_in_dropped",
-						"name": "vyos_packets_in_dropped",
-						"performance-metric": "packets_in_dropped"
-					},
-					{
-						"id": "vyos_packets_ous_dropped",
-						"name": "vyos_packets_out_dropped",
-						"performance-metric": "packets_in_dropped"
-					}
-				],
 				"virtual-compute-desc": "vyos-VM-compute",
 				"virtual-storage-desc": [
 					"vyos-VM-storage"

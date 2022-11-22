@@ -27,15 +27,12 @@ $(document).ready(function(){
 			
 			let flag_fail = false;
 			
-
-
 				for(key in data){
 					if(key == 'code' && data[key] == 'UNAUTHORIZED'){
 						console.log("change");
 						flag_fail = true;
 					}
 				}
-
 
 			if(flag_fail){
 				console.log('get out. LATE');
@@ -138,7 +135,7 @@ function generateDivEDGE(div_id, head, token)
 	let parentElem = document.getElementById(div_id);
 	
 			let _p = document.createElement('p');
-			_p.innerHTML = "Создание нового EDGE";
+			_p.innerHTML = "Добавление нового EDGE";
 			_p.classList.add('headerMainDiv');
 			parentElem.appendChild(_p);
 			
@@ -221,8 +218,17 @@ function generateDivEDGE(div_id, head, token)
 			option_vim_type.innerHTML = 'openstack';
 			let option_vim_type2 = document.createElement('option');
 			option_vim_type2.innerHTML = 'k8s';
+			let option_vim_type3 = document.createElement('option');
+			option_vim_type3.innerHTML = 'AWS';
+			let option_vim_type4 = document.createElement('option');
+			option_vim_type4.innerHTML = 'Azure';
+			let option_vim_type5 = document.createElement('option');
+			option_vim_type5.innerHTML = 'VMware vCD';
 			select_vim_type.appendChild(option_vim_type);
 			select_vim_type.appendChild(option_vim_type2);
+			select_vim_type.appendChild(option_vim_type3);
+			select_vim_type.appendChild(option_vim_type4);
+			select_vim_type.appendChild(option_vim_type5);			
 			name_div6.appendChild(select_vim_type);	
 
 			
@@ -304,11 +310,11 @@ function createInternet(token){
 	var mainDiv = document.getElementById("main_div");
 	mainDiv.innerHTML = '';
 	document.getElementById("roadMap").innerHTML = 'EaaS &nbsp &nbsp>&nbsp &nbsp  Создание сервиса';
-	document.getElementById("placeMap").innerHTML = 'Создание сервиса';
+	document.getElementById("placeMap").innerHTML = 'Сервис Internet';
 	
 	var services = new Object();
 	services = {
-		"name": "Имя сервиса",
+		"name": "Имя",
 		"internal_network": "Внутренняя сеть",
 		"external_network": "Внешняя сеть",
 		"VIM": "Сайт EDGE"
@@ -353,7 +359,7 @@ function generateDivInternet(div_id, head, token)
 			}
 			
 			let parentElem = document.getElementById(div_id);			
-			console.log(vims);
+			//console.log(vims);
 
 			let _p = document.createElement('p');
 			_p.innerHTML = "Создание сервиса Internet";
@@ -594,7 +600,7 @@ function createWSandDBaaS(token){
 	
 	var services = new Object();
 	services = {
-		"name": "Имя сервиса",
+		"name": "Имя",
 		"image_ws": "Образ операционной системы Веб-сервера",
 		"ws_basket": "Шаблон ресурсов веб-сервера",
 		"image_db": "Образ операционной системы БД",
@@ -643,7 +649,7 @@ function generateDivWSDB(div_id, head, token)
 				console.log("getVIMS error!!!");
 			}
 			
-			console.log(vims);
+			//console.log(vims);
 			let parentElem = document.getElementById(div_id);
 
 
@@ -728,9 +734,9 @@ let paramsWS = [{
     "SSD": "10 GB"
   },
   "LARGE": {
-    "vCPU": "4 core",
-    "RAM": "8 GB",
-    "SSD": "15 GB"
+    "vCPU": "3 core",
+    "RAM": "3 GB",
+    "SSD": "10 GB"
   }
 }];	
 
@@ -822,7 +828,7 @@ let paramsDB = [{
   },
   "LARGE": {
     "vCPU": "4 core",
-    "RAM": "8 GB",
+    "RAM": "4 GB",
     "SSD": "10 GB"
   }
 }];				
@@ -990,9 +996,9 @@ let paramsDB = [{
 					storagews = '10';
 				}					
 				else if(resoursesWS == 'DIV_WS_RWS_3'){
-					vCPUws = '4';
-					RAMws = '8';
-					storagews = '15';
+					vCPUws = '3';
+					RAMws = '3';
+					storagews = '10';
 				}				
 
 				if(resoursesDB == 'DIV_WS_RDB_1'){
@@ -1007,7 +1013,7 @@ let paramsDB = [{
 				}					
 				else if(resoursesDB == 'DIV_WS_RDB_3'){
 					vCPUdb = '4';
-					RAMdb = '8';
+					RAMdb = '4';
 					storagedb = '10';
 				}	
 
@@ -1132,10 +1138,10 @@ function createCompute(token){
 	var mainDiv = document.getElementById("main_div");
 	mainDiv.innerHTML = '';
 	document.getElementById("roadMap").innerHTML = 'EaaS &nbsp &nbsp>&nbsp &nbsp  Создание сервиса';
-	document.getElementById("placeMap").innerHTML = 'Создание сервиса';
+	document.getElementById("placeMap").innerHTML = 'Сервис Compute';
 	var services = new Object();
 	services = {
-		"name": "Имя сервиса",
+		"name": "Имя инстанса",
 		"image": "Образ операционной системы",
 		"RAM": "Оперативная память, Gb",
 		"vCPU": "Количество vCPU",
@@ -1191,12 +1197,12 @@ function generateDivCompute(div_id, head, token)
 				console.log("getVIMS error!!!");
 			}
 			
-			console.log(vims);
+			//console.log(vims);
 			let parentElem = document.getElementById(div_id);
 
 
 			let _p = document.createElement('p');
-			_p.innerHTML = "Создание сервиса Compute";
+			_p.innerHTML = "Создание инстанса";
 			_p.classList.add('headerMainDiv');
 			parentElem.appendChild(_p);
 
@@ -1544,10 +1550,10 @@ function getInstances(token){
 							}
 						}
 
-						console.log('items');
-						console.log(items);
-						console.log('dataInstances');
-						console.log(dataInstances);
+						//console.log('items');
+						//console.log(items);
+						//console.log('dataInstances');
+						//console.log(dataInstances);
 						
 						var size = Object.keys(items).length;
 						
@@ -1707,14 +1713,14 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 	console.log(dataInstances);
 
 	document.getElementById("roadMap").innerHTML = 'EaaS &nbsp &nbsp>&nbsp &nbsp  Дашборд';
-	document.getElementById("placeMap").innerHTML = 'Информация о сервисе';
+	document.getElementById("placeMap").innerHTML = 'Информация об инстансе';
 	document.getElementById("main_div").innerHTML = '';
 
 	var head = {
 		"_id": "ID инстанса",
 		"name": "Название",
 		"description": "Тип сервиса",
-		"datacenter_name": "Площадка",
+		"datacenter_name": "Сайт EDGE",
 		"nsState": "Статус инстанса",
 		"create-time": "Дата создания"
 	};
@@ -1769,7 +1775,7 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 		////   ################    Общая инфа
 
 	let _p = document.createElement('p');
-	_p.innerHTML = "Сервис "+ name + ':';
+	_p.innerHTML = "Инстанс"+ name + ':';
 	_p.classList.add('headerMainDiv');
 	parentElem.appendChild(_p);
 
@@ -1804,7 +1810,7 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 	
 
 	let _p_invites = document.createElement('p');
-	_p_invites.innerHTML = "Доступы :";
+	_p_invites.innerHTML = "Доступы:";
 	_p_invites.classList.add('headerMainDiv');
 	parentElem.appendChild(_p_invites);
 	
@@ -1986,10 +1992,11 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 		
 		let tbl_wsdb = document.createElement('table');
 			tbl_wsdb.setAttribute('border', '0');
-			tbl_wsdb.setAttribute('width', '50%');		
+			tbl_wsdb.setAttribute('width', '70%');		
 			
 			
 		let _tr_ws = document.createElement('tr');
+		
 			let _tb_ws_h = document.createElement('td');
 				_tb_ws_h.setAttribute('align', 'center');
 				_tb_ws_h.innerHTML = 'IP веб-сервера';
@@ -1997,7 +2004,6 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 			
 			let _tb_ws_p = document.createElement('td');
 			_tb_ws_p.setAttribute('align', 'left');
-			
 			if(ip_ws == undefined){
 			_tb_ws_p.innerHTML = 'IP-адрес пока не назначен со стороны VIM';	
 			}
@@ -2012,10 +2018,14 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 		tbl_wsdb.appendChild(_tr_ws);
 		
 		
+		
+		
+		
 		let _tr_db_adm = document.createElement('tr');
+		
 			let _tb_db_h1 = document.createElement('td');
 				_tb_db_h1.setAttribute('align', 'center');
-				_tb_db_h1.innerHTML = 'IP GUI базы данных';
+				_tb_db_h1.innerHTML = 'Интерфейс администрирования БД';
 				_tb_db_h1.classList.add('headerInfoTable');
 			
 			let _tb_db_p1 = document.createElement('td');
@@ -2024,28 +2034,13 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 			if(ip_db == undefined){
 			_tb_db_p1.innerHTML = 'IP-адрес пока не назначен со стороны VIM';	
 			}else{
-			_tb_db_p1.innerHTML = '<a href="http://'+ip_db+'/pgadmin4" target="_blank">Подключиться</a>';
+			_tb_db_p1.innerHTML = '<a href="http://'+ip_db+'/pgadmin4" target="_blank">Подключиться</a>'  + ' | ' + 'admin@admin.ru : 123456';
 			}
 			_tb_db_p1.classList.add('tdMainDivReso');		
 			
 		_tr_db_adm.appendChild(_tb_db_h1);	
 		_tr_db_adm.appendChild(_tb_db_p1);	
 		tbl_wsdb.appendChild(_tr_db_adm);
-
-		let _tr_db_adm1 = document.createElement('tr');
-			let _tb_db_h11 = document.createElement('td');
-				_tb_db_h11.setAttribute('align', 'center');
-				_tb_db_h11.innerHTML = 'Логин/Пароль от GUI';
-				_tb_db_h11.classList.add('headerInfoTable');
-			
-			let _tb_db_p11 = document.createElement('td');
-			_tb_db_p11.setAttribute('align', 'left');
-			_tb_db_p11.innerHTML = 'admin@admin.ru : 123456';
-			_tb_db_p11.classList.add('tdMainDivReso');		
-			
-		_tr_db_adm1.appendChild(_tb_db_h11);	
-		_tr_db_adm1.appendChild(_tb_db_p11);	
-		tbl_wsdb.appendChild(_tr_db_adm1);
 
 
 		let _tr_db_adm2 = document.createElement('tr');
@@ -2056,7 +2051,7 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 			
 			let _tb_db_p2 = document.createElement('td');
 			_tb_db_p2.setAttribute('align', 'left');
-			_tb_db_p2.innerHTML = ip_db+':5432';
+			_tb_db_p2.innerHTML = ip_db+':5432' + ' | ' + 'test_db : 12345';
 			_tb_db_p2.classList.add('tdMainDivReso');		
 			
 		_tr_db_adm2.appendChild(_tb_db_h2);	
@@ -2271,7 +2266,7 @@ else{
 				//костыль для действий!!!!
 				if(key == 'revision'){
 					url_to_metric = grafana_url + data[i]['_id'];
-					_tb.innerHTML = "<a href="+url_to_metric+" target='_blank'><img src='../images/metrics.png' valign='middle' alt='Метрики' style='margin-bottom: 4px;'/></a> <img id = "+ 'TRASH_IMG_' + data[i]['_id'] +" src='../images/trash.png' valign='middle' alt='Отключить инстанс' style='cursor: pointer; margin-bottom: 4px;'/> <img id = "+ 'FOLDER_IMG_' + data[i]['_id'] +" src='../images/folder.png' valign='middle' alt='Отключить инстанс' style='cursor: pointer; margin-bottom: 4px;'/>";
+					_tb.innerHTML = "&nbsp<a href="+url_to_metric+" target='_blank'><img src='../images/metrics.png' valign='middle' title='Метрики' style='margin-bottom: 4px;'/></a> &nbsp <img id = "+ 'FOLDER_IMG_' + data[i]['_id'] +" src='../images/folder.png' valign='middle' title='Информация об инстансе' style='cursor: pointer; margin-bottom: 4px;'/> &nbsp&nbsp <img id = "+ 'TRASH_IMG_' + data[i]['_id'] +" src='../images/trash_red.png' valign='middle' title='Отключить инстанс' style='cursor: pointer; margin-bottom: 4px;'/>";
 				}
 				
 				_tb.classList.add(tdClass);					
@@ -2293,7 +2288,7 @@ else{
 
 	//Заголовок Перед таблицей
 	let _p_resources = document.createElement('p');
-	_p_resources.innerHTML = "Ресурсы";
+	_p_resources.innerHTML = "Ресурсы EDGE";
 	_p_resources.classList.add('headerMainDiv');
 	parentElem.appendChild(_p_resources);
 
@@ -2316,17 +2311,29 @@ else{
 			let _tr_head = document.createElement('tr');
 				
 				let td_id_name = document.createElement('td');
-				td_id_name.innerHTML = 'Сайт EDGE';
-				td_id_name.classList.add('headerResoTable');
+				td_id_name.setAttribute('colspan', '3');
+				td_id_name.setAttribute('align', 'center');
+				td_id_name.innerHTML = 'Ресурсы' + ' ' + vim_accounts[i]["name"];
+				td_id_name.classList.add('headerResoTableOne');
 				
-				let td_id_attr = document.createElement('td');
-				td_id_attr.innerHTML = vim_accounts[i]["name"];
-				td_id_attr.setAttribute('colspan', '2');
-				td_id_attr.classList.add('tdMainDivReso');
+
 				
 			_tr_head.appendChild(td_id_name);
-			_tr_head.appendChild(td_id_attr);
 			
+
+			let _tr_type_vim = document.createElement('tr');
+				
+				let td_type_name = document.createElement('td');
+				td_type_name.innerHTML = 'Тип VIM';
+				td_type_name.classList.add('headerResoTable');
+				
+				let td_type_attr = document.createElement('td');
+				td_type_attr.innerHTML = vim_accounts[i]["vim_type"];
+				td_type_attr.setAttribute('colspan', '2');
+				td_type_attr.classList.add('tdMainDivReso');
+				
+			_tr_type_vim.appendChild(td_type_name);	
+			_tr_type_vim.appendChild(td_type_attr);
 
 			
 			let _tr_url = document.createElement('tr');
@@ -2416,6 +2423,7 @@ else{
 			
 			
 			tbl_id.appendChild(_tr_head);
+			tbl_id.appendChild(_tr_type_vim);
 			tbl_id.appendChild(_tr_url);
 			tbl_id.appendChild(_tr_vCPU);
 			tbl_id.appendChild(_tr_RAM);
