@@ -1396,7 +1396,7 @@ function generateDivCompute(div_id, head, token)
 				
 				if(instanceName != ''){
 					
-					let alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456789',
+					let alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz123456789',
 					pass_to_vnf = '';
 					for(let i = 0; i < 4; i++){
 					pass_to_vnf += alphabet[Math.round(Math.random() * (alphabet.length - 1))];
@@ -1549,16 +1549,33 @@ function getInstances(token){
 								current = current + 1;
 							}
 						}
+						
+						
+						let vim_items = {};
+						let current_vim = 0;
+						for(let i = 0; i < vims_accounts.length; i++){
+							
+							if(vims_accounts[i]['resources']['compute']['ram']['total'] == null){
+								let item = {};
+								item._id = vims_accounts[i]["_id"];
+								item.state_ram = vims_accounts[i]['resources']['compute']['ram']['total'];
+								vim_items[current_vim] = item;
+								current_vim = current_vim + 1;
+							}
+						}
+						
+						
 
-						//console.log('items');
+						console.log(vim_items);
 						//console.log(items);
 						//console.log('dataInstances');
 						//console.log(dataInstances);
 						
 						var size = Object.keys(items).length;
+						var size_vim = Object.keys(vim_items).length;
 						
 						if(size > 0){
-							console.log("существуют не READY");
+							console.log("существуют не READY инстансы!");
 							(function worker() {
 							  $.ajax({
 								url: './core/engine.php', 
@@ -1632,7 +1649,50 @@ function getInstances(token){
 							})();
 						}
 
-
+						if(size_vim > 0){
+							
+							console.log("существуют не READY VIMs!");
+							
+							(function worker_vims() {
+							  $.ajax({
+								url: './core/engine.php', 
+								dataType: "json",
+								data: {
+									action: "getVimState",
+									token: token,
+									obj: vim_items
+								},							
+								success: function(data) 
+								{
+									
+								console.log(data);
+									
+								  let flag = 0;
+								  
+								  for(let i = 0; i < data.length; i++){
+									
+									let state_inst = data[i]["ram_state"];
+									  
+									if(state_inst == null){
+										
+										flag = flag + 1;
+										
+									}
+								  }
+									  
+								  
+								  
+								  if(flag == 0){
+									 location.reload();
+								  }
+								  
+								},
+								complete: function() {
+								  setTimeout(worker_vims, 2000);
+								}
+							  });
+							})();							
+						}
 			    ///////////////////////////////////    удалить инстанс!!!!
 				
 						$('img').click(function()
@@ -2201,7 +2261,7 @@ else{
 
 	let _tbl = document.createElement('table'); //table +
 	_tbl.setAttribute('border', '0');
-	_tbl.setAttribute('width', '90%');
+	_tbl.setAttribute('width', '100%');
 	// шапка
 	let _tr_header = document.createElement('tr'); //tr +
 	for (key in head) {

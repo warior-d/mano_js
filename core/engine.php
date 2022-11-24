@@ -22,6 +22,66 @@ define('GET_TOKEN_INFO', '/admin/v1/tokens/');
 	die();
 }
 
+
+function getVimState()
+{
+	$token = $_REQUEST['token'];
+	
+	$obj = $_REQUEST['obj'];
+	
+	$count_in = count($obj);
+	
+	$ch = curl_init(API_MANO_BASE.GET_VIMS);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8',
+	'Accept: application/json; charset=utf-8', 'Connection: keep-alive', 'Authorization: Bearer '.$token,
+	'Content-Length: '.mb_strlen($data)));
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($ch, CURLOPT_HEADER, "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)");
+	$res = curl_exec($ch);
+	curl_close($ch);
+	#print_r($res);
+	$decoded_json_vim = json_decode($res, true);
+	
+	$new_obj = [];
+		
+	for($i = 0; $i < count($decoded_json_vim); $i++){
+		foreach($decoded_json_vim[$i] as $key=>$value){
+			if($key == "_id"){
+				for($y = 0; $y < count($obj); $y++){
+					foreach($obj[$y] as $k=>$v){
+						if(($k == '_id') && $v == $value){
+							
+							$new_arr = [];
+							$new_arr["_id"] = $decoded_json_vim[$i]["_id"];
+							$new_arr["ram_state"] = $decoded_json_vim[$i]['resources']['compute']['ram']['total'];
+							array_push($new_obj, $new_arr);
+						}
+					}
+				}
+			}
+		}		
+	}
+
+	$json_out = json_encode($new_obj);
+	print_r($json_out);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 function getTokenInfo()
 {
 	$token = $_REQUEST['token'];
