@@ -2460,7 +2460,7 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 
 		let tbl_wsdb = document.createElement('table');
 			tbl_wsdb.setAttribute('border', '0');
-			tbl_wsdb.setAttribute('width', '50%');		
+			tbl_wsdb.setAttribute('width', '240px');		
 			
 			
 		let _tr_ws = document.createElement('tr');
@@ -2697,6 +2697,38 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 							
 						}
 						td_all_info_2.appendChild(tbl_sett);	
+
+					$("#SETTINGS_PF_dst_port").keyup(function(data)
+					{
+						var curStr = $('#SETTINGS_PF_dst_port').val();
+						let clear_string = curStr.replace(/[^\d]/g, '');
+						
+						if(clear_string !=  curStr)
+						{
+							document.getElementById("SETTINGS_PF_dst_port").value = clear_string;
+						}
+						
+						if(parseInt(clear_string) > 65535){
+							document.getElementById("SETTINGS_PF_dst_port").value = '';
+							alert('Порт не может быть больше 65535!');
+						}
+					});
+
+					$("#SETTINGS_PF_trans_port").keyup(function(data)
+					{
+						var curStr = $('#SETTINGS_PF_trans_port').val();
+						let clear_string = curStr.replace(/[^\d]/g, '');
+						
+						if(clear_string !=  curStr)
+						{
+							document.getElementById("SETTINGS_PF_trans_port").value = clear_string;
+						}
+						
+						if(parseInt(clear_string) > 65535){
+							document.getElementById("SETTINGS_PF_trans_port").value = '';
+							alert('Порт не может быть больше 65535!');
+						}
+					});
 
 
 					$('button').click(function()
@@ -2935,6 +2967,41 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 							
 						}
 						td_all_info_4.appendChild(tbl_acl);						
+
+
+					$("#SETTINGS_ACL_src_port").keyup(function(data)
+					{
+						var curStr = $('#SETTINGS_ACL_src_port').val();
+						let clear_string = curStr.replace(/[^\d]/g, '');
+						
+						if(clear_string !=  curStr)
+						{
+							document.getElementById("SETTINGS_ACL_src_port").value = clear_string;
+						}
+						
+						if(parseInt(clear_string) > 65535){
+							document.getElementById("SETTINGS_ACL_src_port").value = '';
+							alert('Порт не может быть больше 65535!');
+						}
+					});
+
+					$("#SETTINGS_ACL_dst_port").keyup(function(data)
+					{
+						var curStr = $('#SETTINGS_ACL_dst_port').val();
+						let clear_string = curStr.replace(/[^\d]/g, '');
+						
+						if(clear_string !=  curStr)
+						{
+							document.getElementById("SETTINGS_ACL_dst_port").value = clear_string;
+						}
+						
+						if(parseInt(clear_string) > 65535){
+							document.getElementById("SETTINGS_ACL_dst_port").value = '';
+							alert('Порт не может быть больше 65535!');
+						}
+					});
+
+
 						
 						
 					$('button').click(function()
