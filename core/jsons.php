@@ -1,6 +1,104 @@
 <?php
 
 
+
+
+function addPortForwardingJSON($dst_port, $trans_addr , $trans_port)
+{
+$newNS = 
+<<<NS
+{
+  "primitive": "add_port_forwarding",
+  "primitive_params": {
+    "dst_port": "$dst_port",
+    "trans_addr": "$trans_addr",
+    "trans_port": "$trans_port"
+  },
+  "member_vnf_index": "vyos-1"
+}
+NS;
+
+return $newNS;
+}
+
+
+
+
+function deletePortForwarding(){
+
+$newNS = 
+<<<NS
+{
+  "primitive": "del_port_forwarding",
+  "primitive_params": {},
+  "member_vnf_index": "vyos-1"
+}
+NS;
+
+return $newNS;
+}
+
+
+function getInfoPortForwarding(){
+
+$newNS = 
+<<<NS
+{
+  "primitive": "get_port_forwarding",
+  "primitive_params": {},
+  "member_vnf_index": "vyos-1"
+}
+NS;
+
+return $newNS;
+}
+
+
+
+
+
+
+
+function getNetServInternetPackage($instance_name, $instance_description, $ns_id, $vim_id){
+
+
+$newNS = 
+<<<NS
+{
+  "nsName": "$instance_name",
+  "nsDescription": "$instance_description",
+  "nsdId": "$ns_id",
+  "vimAccountId": "$vim_id",
+  "additionalParamsForVnf": [
+    {
+      "member-vnf-index": "vyos-1",
+      "additionalParams": {
+        "hostname": "vyos-1-single",
+        "password": "vyospass"
+      }
+    }
+  ],
+  "vld": [
+    {
+      "name": "public"
+    },
+    {
+      "name": "internal",
+      "vim-network-name": "internal"
+    }
+  ]
+}
+NS;
+
+return $newNS;
+}
+
+
+
+
+
+
+
 function getEDGE($name, $url_edge, $tenant_name, $user_edge, $pass_edge){
 	
 $edge = 

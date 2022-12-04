@@ -65,13 +65,19 @@ $(document).ready(function(){
 
 				});	
 
-				//создать dbas
+				//создать internet
 				$("#div_internet").click(function() {
 					
 					createInternet(token);
 
 				});	
 				
+				//создать internet test
+				$("#div_internet_test").click(function() {
+					
+					createInternetNew(token);
+
+				});	
 				
 				$("#div_dashboard").click(function() {
 					
@@ -95,6 +101,304 @@ $(document).ready(function(){
 	
 
 });
+
+
+function createInternetNew(token){
+	
+	var mainDiv = document.getElementById("main_div");
+	mainDiv.innerHTML = '';
+	document.getElementById("roadMap").innerHTML = 'EaaS &nbsp &nbsp>&nbsp &nbsp  Создание сервиса';
+	document.getElementById("placeMap").innerHTML = 'Сервис Internet';
+	
+	var services = new Object();
+	services = {
+		"name": "Имя",
+		"internal_network": "Внутренняя сеть",
+		"external_network": "Внешняя сеть",
+		"VIM": "Сайт EDGE"
+	};
+	
+	generateDivInternetNew("main_div", services, token);
+}
+
+
+function generateDivInternetNew(div_id, head, token)
+{
+
+	var vims = new Array();
+	var needParams = ["vim_url", "name", "vim_type", "_id"];
+	
+
+	$.ajax({
+	type:"POST",
+	url: "./core/engine.php",
+	dataType: "json",
+	data: {
+		action: "getVims",
+		token: token
+		},
+	success: function(data) 
+		{
+
+			if(data.length>=1){
+				for(let i=0; i < data.length;i++){
+					
+					var arr = {};
+					for(key in data[i]){
+						if(needParams.indexOf(key) != -1){
+							arr[key] = data[i][key];
+						}
+					}
+					vims[i] = arr;
+				}
+			}
+			else{
+				console.log("getVIMS error!!!");
+			}
+			
+			let parentElem = document.getElementById(div_id);			
+			//console.log(vims);
+
+			let _p = document.createElement('p');
+			_p.innerHTML = "Создание сервиса Internet";
+			_p.classList.add('headerMainDiv');
+			parentElem.appendChild(_p);
+
+
+			var col = 1;
+			var row = Object.keys(head).length*2;
+			let _tbl = document.createElement('table'); //table +
+			_tbl.setAttribute('border', '0');
+			_tbl.setAttribute('width', '45%');
+			for(let i = 0; i < col; i++){
+				for(let y = 0; y < row; y++){
+					let _tr = document.createElement('tr');
+					
+					let _td = document.createElement('td');
+					_td.id = 'TD_INTERNET_'+y;
+					
+					//раскидаем titles сразу.
+					if(y%2 == 0){
+						let num = y/2;
+						let title = '';
+						let i = 0;
+						for(key in head){
+							if(i == num){
+								let _p = document.createElement('p');
+								_p.id = 'P_INTERNET_'+y;
+								_p.innerHTML = head[key];
+								_p.classList.add('computeTableP');
+								_td.appendChild(_p);
+							}
+							i++;
+						}
+					}
+					else{
+						let _div = document.createElement('div');
+						_div.id = 'DIV_INT_'+y;
+						_td.appendChild(_div)
+					}
+					_tr.appendChild(_td);
+					_tbl.appendChild(_tr);
+				}
+			}
+			parentElem.appendChild(_tbl);
+			
+
+			let name_div1 = document.getElementById('DIV_INT_1');
+			let name_input = document.createElement('input');
+			name_input.id = 'input_name_internet';
+			name_input.classList.add('inputName');
+			name_div1.appendChild(name_input);
+			
+			let name_div3 = document.getElementById('DIV_INT_3');
+			let select_int_network = document.createElement('select');
+			select_int_network.id = 'select_int_network';
+			select_int_network.classList.add('selectStyle');
+			let option_int_netw = document.createElement('option');
+			option_int_netw.innerHTML = 'internal';
+			select_int_network.appendChild(option_int_netw);
+			name_div3.appendChild(select_int_network);
+
+			let name_div5 = document.getElementById('DIV_INT_5');
+			let select_ext_network = document.createElement('select');
+			select_ext_network.id = 'select_ext_network';
+			select_ext_network.classList.add('selectStyle');
+			let ortion_ext_network = document.createElement('option');
+			ortion_ext_network.innerHTML = 'external';
+			select_ext_network.appendChild(ortion_ext_network);
+			name_div5.appendChild(select_ext_network);	
+
+			let name_div7 = document.getElementById('DIV_INT_7');
+			let _select_vim = document.createElement('select');
+			_select_vim.id = 'select_vim_internet';
+			_select_vim.classList.add('selectStyle');
+			
+			for(let i=0; i < vims.length; i++){
+
+				if(vims[i]["vim_type"] != "openstack"){
+					continue;
+				}
+				else{
+
+					for(key in vims[i]){
+						if(key == 'name'){
+							let _option = document.createElement('option');
+							_option.id = 'OPT_INT_' + vims[i][key];
+						_option.innerHTML = vims[i][key]; // + '(' + vims[i]['vim_url'] + ')'
+							_select_vim.appendChild(_option);
+						}
+					}
+					name_div7.appendChild(_select_vim);	
+				}
+			}
+		
+		
+			$("#input_name_internet").keyup(function(data)
+			{
+				var curStr = $('#input_name_internet').val();
+				if(curStr.trim() !=  curStr)
+				{
+					document.getElementById("input_name_internet").value = curStr.trim();
+				}
+			});
+
+			let _butt_exec = document.createElement('button');
+			_butt_exec.id = 'execute_button_internet';
+			_butt_exec.innerHTML = 'Создать';
+			_butt_exec.classList.add('forbuttonExec');
+			parentElem.appendChild(_butt_exec);
+
+
+
+			
+			$("#execute_button_internet").click(function() {
+				let instanceName = $('#input_name_internet').val();
+
+				let internalNetwork = $('#select_int_network').val();
+				
+				let externalNetwork =  $('#select_ext_network').val();
+
+				let vimName = $('#select_vim_internet').val();
+				
+				let vim_id = '';
+				
+				for(var i =0; i < vims.length; i++){
+					
+					if(vims[i]['name'] == vimName){
+						vim_id = vims[i]['_id'];
+					}
+					
+				}
+				
+				
+				if(instanceName != ''){
+					
+					console.log(instanceName + '' + internalNetwork + '' + externalNetwork + '' + vimName);
+					
+										//////////////////////////////////////////// создадим VNFd
+					$.ajax({
+						type:"POST",
+						url: "./core/engine.php",
+						dataType: "json",
+						data: {
+							action: "sendVNFDgzip",
+							name: instanceName,
+							token: token,
+							internalNetwork: internalNetwork,
+							externalNetwork: externalNetwork,
+							vim: vim_id
+							},
+						success: function(data) 
+							{
+								console.log(data);
+								
+								if(data["code"] == "CONFLICT"){
+									alert(" Сервис 'доступ в Интернет' с указанным именем уже существует в Вашем проекте! ");
+								}
+								else{
+									
+									///////////////////////////////// создадим NSd
+									$.ajax({
+										type:"POST",
+										url: "./core/engine.php",
+										dataType: "json",
+										data: {
+											action: "sendNSDgzip",
+											name: instanceName,
+											token: token,
+											internalNetwork: internalNetwork,
+											externalNetwork: externalNetwork,
+											vim: vim_id
+											},
+										success: function(data) 
+											{
+												console.log(data);
+												let nsd_id = '';
+												nsd_id = data['id'];
+												
+
+									///////////////////////////////// создадим NS !!!!!!!
+												$.ajax({
+													type:"POST",
+													url: "./core/engine.php",
+													dataType: "json",
+													data: {
+														action: "createNSinternetFROMpackage",
+														name: instanceName,
+														token: token,
+														vim: vim_id,
+														ns_id: nsd_id,
+														instanceType: 'internet'
+														},
+													success: function(data) 
+														{
+															console.log(data);
+															getInstances(token);
+														}
+												});
+
+											}
+									});
+								
+								}
+								
+							}
+					});
+
+				}
+				else if(instanceName == ''){
+					alert(" Не указано название сервиса! ");
+				}				
+				else if(resoursesWS == ''){
+					alert(" Не выбраны ресурсы WS! ");
+				}
+				else if(resoursesDB == ''){
+					alert(" Не выбраны ресурсы DB! ");
+				}
+			});
+
+
+
+
+		}
+		
+});
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function getOut(){
 	
@@ -1741,7 +2045,7 @@ function getInstances(token){
 										},
 									success: function(vnfrs) 
 										{
-											generateInfoInstance("main_div", ns_id, vnfrs, vims_accounts, dataInstances);
+											generateInfoInstance("main_div", ns_id, vnfrs, vims_accounts, dataInstances, token);
 										}
 									});
 									
@@ -1763,7 +2067,7 @@ function getInstances(token){
 }
 
 
-function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances)
+function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances, token)
 {
 	let parentElem = document.getElementById(div_id);
 	
@@ -2121,7 +2425,7 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 		parentElem.appendChild(tbl_wsdb);
 	}//					                                 ###### INTERNET ######
 	else if(service_type == 'internet'){
-			
+
 		var header_wsdb = {
 			"internal_IP": "внутренний IP-адрес",
 			"external_IP": "внешний IP-адрес"
@@ -2131,16 +2435,16 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 			"internal_IP": "",
 			"external_IP": ""
 		};		
-		
+
 		let ip_int = 'IP-адрес пока не назначен VIM';
 		let ip_ext = 'IP-адрес пока не назначен VIM';		
-	
+
 		for(let i = 0; i < vnfrs.length; i++){
 
 			if(vnfrs[i]["nsr-id-ref"] == ns_id){
-				
+
 				let arr_vm_info = vnfrs[i]["vdur"]['0']["interfaces"];
-				
+
 				for(key in arr_vm_info){
 
 						if(arr_vm_info[key]['ns-vld-id'] == "public"){
@@ -2149,13 +2453,11 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 						else if(arr_vm_info[key]['ns-vld-id'] == "internal"){
 							ip_int = arr_vm_info[key]['ip-address'];
 						}
-						
+
 					}
 				}
-			
-		}	
-	
-	
+		}
+
 		let tbl_wsdb = document.createElement('table');
 			tbl_wsdb.setAttribute('border', '0');
 			tbl_wsdb.setAttribute('width', '50%');		
@@ -2205,7 +2507,283 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 
 
 		parentElem.appendChild(tbl_wsdb);
+		
+	let _p_settings = document.createElement('p');
+	_p_settings.innerHTML = "Настройки:";
+	_p_settings.classList.add('headerMainDiv');
+	parentElem.appendChild(_p_settings);
 	
+
+// ##### Наполняем port forwarding
+// ##### Здесь REST
+
+
+	let tbl_all_info = document.createElement('table');
+		tbl_all_info.setAttribute('border', '0');
+		tbl_all_info.setAttribute('width', '570px');
+		
+	let tr_all_info_1 = document.createElement('tr');
+		let td_all_info_1 = document.createElement('td');
+		td_all_info_1.innerHTML = "Port forwarding";
+		td_all_info_1.classList.add('settingsMainDiv');
+	tr_all_info_1.appendChild(td_all_info_1);
+	tbl_all_info.appendChild(tr_all_info_1);
+	
+	let tr_all_info_2 = document.createElement('tr');
+		let td_all_info_2 = document.createElement('td');
+		td_all_info_2.id = 'TD_PF';
+		td_all_info_2.setAttribute('align', 'center');
+		td_all_info_2.setAttribute('height', '90px');
+		td_all_info_2.setAttribute('valign', 'middle');
+		td_all_info_2.innerHTML = "<img src='../images/preloader_info_inet.gif'/>";
+	tr_all_info_2.appendChild(td_all_info_2);
+	tbl_all_info.appendChild(tr_all_info_2);
+	
+
+	let tr_all_info_3 = document.createElement('tr');
+		let td_all_info_3 = document.createElement('td');
+		td_all_info_3.innerHTML = "Списки доступа";
+		td_all_info_3.classList.add('settingsMainDiv');
+	tr_all_info_3.appendChild(td_all_info_3);
+	tbl_all_info.appendChild(tr_all_info_3);
+
+
+	let tr_all_info_4 = document.createElement('tr');
+		let td_all_info_4 = document.createElement('td');
+		td_all_info_4.id = 'TD_ACL';
+		td_all_info_4.setAttribute('align', 'center');
+		td_all_info_4.setAttribute('height', '90px');
+		td_all_info_4.setAttribute('valign', 'middle');
+		td_all_info_4.innerHTML = "<img src='../images/preloader_info_inet.gif'/>";
+	tr_all_info_4.appendChild(td_all_info_4);
+	tbl_all_info.appendChild(tr_all_info_4);
+
+
+	
+	parentElem.appendChild(tbl_all_info);	
+	
+	
+// ###########  вот тут для понимания - нам нужно гетить 2 (ДВА) параметра...
+	$.ajax({
+	type:"POST",
+	url: "./core/engine.php",
+	dataType: "json",
+	data: {
+		action: "sendNSactionGETpf",
+		token: token,
+		ns_id: ns_id
+		},
+	success: function(data) 
+		{
+			lcm_id = data['id'];
+
+			(function getLCMstatusPF(){
+				
+			let flag = 0;
+			let pf_info = '';
+			  $.ajax({
+				url: './core/engine.php', 
+				dataType: "json",
+				data: {
+					action: "sendLCMoperationState",
+					token: token,
+					lcm_id: lcm_id
+				},							
+				success: function(data) 
+				{
+				  for(key in data){
+					  
+					if(key == 'operationState'){
+						if(data[key] != 'COMPLETED'){
+							flag = flag + 1;
+						}
+						
+					}
+				  }
+				},
+				complete: function(dataPF) {
+					if(flag == 0){
+						
+						let dataPFstatus = dataPF['responseJSON'];
+						let state_port_forwarding = true;
+						let dst_port = '';
+						let trans_addr = '';
+						let trans_port = '';
+						
+						var header_pf_values = {
+							"dst_port": '',
+							"trans_port": '',
+							"trans_addr": ''
+						}
+						
+						for(key in dataPFstatus){
+							
+							if(key == 'detailed-status'){
+								let state = JSON.parse(dataPFstatus[key])
+								if(state['dst_port'] == null && state['trans_addr'] == null && state['trans_port'] == null){
+									state_port_forwarding = false;
+								}
+								else{
+									header_pf_values['dst_port'] = state['dst_port'];
+									header_pf_values['trans_addr'] = state['trans_addr'];
+									header_pf_values['trans_port'] = state['trans_port'];
+								}
+							}
+							
+						}
+						
+						td_all_info_2.innerHTML = '';
+						
+						var header_pf_params = {
+							"dst_port": "Destination port",
+							"trans_port": "Translation port",
+							"trans_addr": "Translation address",
+							
+						};
+					
+						var rows = 3;
+					
+						let tbl_sett = document.createElement('table');
+							tbl_sett.setAttribute('border', '0');	
+
+						for(let i = 0; i < rows; i++){
+							
+							let _tr = document.createElement('tr'); //tr +
+							
+							for (key in header_pf_params){
+								let _td = document.createElement('td');
+								_td.setAttribute('align', 'center');
+								
+								if(i == 0){
+									_td.innerHTML = header_pf_params[key];
+									_td.classList.add('headerSettingsTable');
+								}
+								
+								if(i == 1){
+									_input = document.createElement('input');
+									_input.id = 'SETTINGS_PF_'+key;
+									_td.classList.add('headerSettingsTable');
+									if(state_port_forwarding == true){
+										_input.value = header_pf_values[key];
+										_input.disabled = true;
+									}
+									_td.appendChild(_input);
+								}								
+
+								if(i == 2 && (key == "trans_addr")){
+									_buttonAPPLYpf = document.createElement('button');
+									_buttonAPPLYpf.innerHTML = "Apply";
+									_buttonAPPLYpf.classList.add('forbuttonInternetGeneric');
+									_buttonAPPLYpf.id = 'APPLY_PF';
+									if(state_port_forwarding == true){
+										_buttonAPPLYpf.disabled = true;
+									}
+									_buttonDELETEpf = document.createElement('button');
+									_buttonDELETEpf.innerHTML = "Delete";
+									_buttonDELETEpf.classList.add('forbuttonInternetGeneric');
+									_buttonDELETEpf.id = 'DELETE_PF';
+									if(state_port_forwarding == false){
+										_buttonDELETEpf.disabled = true;
+									}
+									_td.appendChild(_buttonAPPLYpf);
+									_td.appendChild(_buttonDELETEpf);
+								}	
+
+								_tr.appendChild(_td);
+								
+							}
+							
+							tbl_sett.appendChild(_tr);	
+							
+						}
+						td_all_info_2.appendChild(tbl_sett);	
+
+
+					$('button').click(function()
+					{
+						
+						var clickId = $(this).attr('id');
+						if(clickId != undefined){
+
+							if(clickId.indexOf("APPLY_PF") >= 0){
+								
+								console.log(header_pf_values);
+								
+								let dst_port = $('#SETTINGS_PF_dst_port').val();
+								let trans_addr = $('#SETTINGS_PF_trans_addr').val();
+								let trans_port = $('#SETTINGS_PF_trans_port').val();
+								
+								$.ajax({
+									type:"POST",
+									url: "./core/engine.php",
+									dataType: "json",
+									data: {
+										action: "addPortForwarding",
+										token: token,
+										ns_id: ns_id,
+										dst_port: dst_port,
+										trans_addr: trans_addr,
+										trans_port: trans_port
+										},
+									success: function(vnfrs)
+										{
+											alert('Задание на добавление Port Forwarding отправлено!');
+											location.reload();											
+										}
+								});
+								
+							}
+							if(clickId.indexOf("DELETE_PF") >= 0){
+								
+								console.log(header_pf_values);
+								
+								$.ajax({
+									type:"POST",
+									url: "./core/engine.php",
+									dataType: "json",
+									data: {
+										action: "sendNSactionDELpf",
+										token: token,
+										ns_id: ns_id
+										},
+									success: function(delpf) 
+										{
+											alert('Задание на удаление отправлено!');
+											location.reload();
+										}
+								});
+								
+							}							
+						}
+					});							
+						
+
+
+						return;
+					}
+					setTimeout(getLCMstatusPF, 1000);
+				}
+			  });
+			})();				
+			
+		}
+	});
+
+		
+// ##### Наполняем ACL	
+		
+		
+		
+
+
+
+
+
+
+// ###### События внутри инета!
+
+
+		
 	}
 	
 }

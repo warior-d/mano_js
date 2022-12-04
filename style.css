@@ -54,6 +54,40 @@
   cursor: pointer;
   margin-left: 73px;
 }
+.forbuttonInternetGreen {
+  width: 52px;
+  height: 22px;
+  padding: 0px;
+  font-family: MTSmain;
+  font-size: 14px;
+  color: white;
+  background-color: green;
+  border: 1px solid #f0f0f0;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+.forbuttonInternet {
+  width: 52px;
+  height: 22px;
+  padding: 0px;
+  font-family: MTSmain;
+  font-size: 14px;
+  color: white;
+  background-color: red;
+  border: 1px solid #f0f0f0;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+.forbuttonInternetGeneric {
+  font-family: MTSmain;
+  font-size: 14px;
+  margin-left: 10px;
+}
+
+.forbuttonInternet:hover {background-color: rgb(200, 5, 15);}
+.forbuttonInternetGreen:hover {background-color: #004d00;}
 .forbuttonExec:hover {background-color: rgb(200, 5, 15);}
 .computeTableP {font-family: 'MTSmain'; font-size: 14px; color: #626C77;}
 .inputName {margin-bottom: 20px; width: 350px; height: 32px; background-color: #F2F3F7; font-family: MTSmain; font-size: 14px; color: #1D2023; border-radius: 5px; border: 1px solid #f0f0f0; padding: 5px; }
@@ -82,6 +116,9 @@
 .pWSdiv1 {font-family: 'MTSmain'; font-size: 14px; color: #626C77; text-align: center;}
 
 .headerMainDiv {font-family: 'MTSmed'; font-size: 24px; color: #1D2023; text-align: left; }
+.settingsMainDiv {font-family: 'MTSmain'; font-size: 18px; color: #1D2023; text-align: center; }
+.headerSettingsTable {font-family: 'MTSmed'; font-size: 14px; color: #626C77; border-bottom: 3px solid #f0f0f0; text-align: center; }
+
 .headerInfoTable {font-family: 'MTSmed'; font-size: 14px; color: #626C77; border-bottom: 3px solid #f0f0f0; text-align: left; }
 .tdMainDiv {font-family: 'MTSmain'; font-size: 13px; border-bottom: 3px solid #f0f0f0; }
 .tdMainDivStateBuild {font-family: 'MTSmain'; font-size: 13px; border-bottom: 3px solid #f0f0f0; color: #e8e409}

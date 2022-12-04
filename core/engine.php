@@ -12,6 +12,11 @@ define('GET_VNFR','/nslcm/v1/vnf_instances');
 define('GET_VNFDS', '/vnfpkgm/v1/vnf_packages');
 define('CREATE_VIM', '/admin/v1/vims');
 define('GET_TOKEN_INFO', '/admin/v1/tokens/');
+define('SEND_ZIP_VNFD', '/vnfpkgm/v1/vnf_packages_content');
+define('SEND_ZIP_NSD', '/nsd/v1/ns_descriptors_content');
+define('SEND_VNF_ACTION', '/nslcm/v1/ns_instances/%s/action');
+define('GET_LCM_STATUS', '/nslcm/v1/ns_lcm_op_occs/');
+
 //
 
  if(!empty($_REQUEST)){
@@ -21,6 +26,245 @@ define('GET_TOKEN_INFO', '/admin/v1/tokens/');
 	}
 	die();
 }
+
+
+
+function addPortForwarding()
+{
+	include "jsons.php";
+	
+	$token = $_REQUEST['token'];
+	$ns_id = $_REQUEST['ns_id'];
+	$dst_port = $_REQUEST['dst_port'];
+	$trans_addr = $_REQUEST['trans_addr'];
+	$trans_port = $_REQUEST['trans_port'];
+
+	$nsd = addPortForwardingJSON($dst_port, $trans_addr , $trans_port);	
+
+	$formatACTIONurl = sprintf(SEND_VNF_ACTION, $ns_id);
+	
+
+	$ch = curl_init(API_MANO_BASE.$formatACTIONurl);
+
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8',
+	'Accept: application/json; charset=utf-8', 'Authorization: Bearer '.$token));
+	curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $nsd); 
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($ch, CURLOPT_HEADER, "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)");
+	$id_nsd = curl_exec($ch);
+	$status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+	curl_close($ch);
+
+
+	echo $id_nsd;
+}
+
+
+
+
+function sendNSactionDELpf()
+{
+	include "jsons.php";
+	
+	$token = $_REQUEST['token'];
+	$ns_id = $_REQUEST['ns_id']; 
+
+
+	$nsd = deletePortForwarding();	
+
+	$formatACTIONurl = sprintf(SEND_VNF_ACTION, $ns_id);
+	
+
+	$ch = curl_init(API_MANO_BASE.$formatACTIONurl);
+
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8',
+	'Accept: application/json; charset=utf-8', 'Authorization: Bearer '.$token));
+	curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $nsd); 
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($ch, CURLOPT_HEADER, "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)");
+	$id_nsd = curl_exec($ch);
+	$status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+	curl_close($ch);
+
+
+	echo $id_nsd;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function sendLCMoperationState()
+{
+	include "jsons.php";
+	
+	$token = $_REQUEST['token'];
+	$lcm_id = $_REQUEST['lcm_id']; 
+
+	$ch = curl_init(API_MANO_BASE.GET_LCM_STATUS.$lcm_id);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8',
+	'Accept: application/json; charset=utf-8', 'Connection: keep-alive', 'Authorization: Bearer '.$token));
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($ch, CURLOPT_HEADER, "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)");
+	$res_vnfd = curl_exec($ch);
+	curl_close($ch);
+
+	echo $res_vnfd;
+}
+
+
+
+
+function sendNSactionGETpf()
+{
+	include "jsons.php";
+	
+	$token = $_REQUEST['token'];
+	$ns_id = $_REQUEST['ns_id']; 
+
+
+	$nsd = getInfoPortForwarding();	
+
+	$formatACTIONurl = sprintf(SEND_VNF_ACTION, $ns_id);
+	
+
+	$ch = curl_init(API_MANO_BASE.$formatACTIONurl);
+
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8',
+	'Accept: application/json; charset=utf-8', 'Authorization: Bearer '.$token));
+	curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $nsd); 
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($ch, CURLOPT_HEADER, "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)");
+	$id_nsd = curl_exec($ch);
+	$status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+	curl_close($ch);
+
+
+	echo $id_nsd;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+function sendNSDgzip(){
+	$token = $_REQUEST['token'];
+	$name = $_REQUEST['name'];
+	$internalNetwork = $_REQUEST['internalNetwork'];
+	$externalNetwork = $_REQUEST['externalNetwork'];
+	$vim = $_REQUEST['vim'];
+
+	$fp = fopen('../descriptors/vyos/vyos-single-ns.tar.gz', 'r');
+	$ch = curl_init(API_MANO_BASE.SEND_ZIP_NSD);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/gzip', 'accept: application/json', 'Connection: keep-alive', 'Authorization: Bearer '.$token));
+	curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_INFILE, $fp);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($ch, CURLOPT_TIMEOUT, 50);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	$id_vnfd = curl_exec($ch);
+	curl_close($ch);
+	fclose($fp);
+	echo $id_vnfd;
+}
+
+
+function sendVNFDgzip()
+{
+	$token = $_REQUEST['token'];
+	$name = $_REQUEST['name'];
+	$internalNetwork = $_REQUEST['internalNetwork'];
+	$externalNetwork = $_REQUEST['externalNetwork'];
+	$vim = $_REQUEST['vim'];
+
+	$fp = fopen('../descriptors/vyos/vyos-single-vnf.tar.gz', 'r');
+	$ch = curl_init(API_MANO_BASE.SEND_ZIP_VNFD);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/gzip', 'accept: application/json', 'Connection: keep-alive', 'Authorization: Bearer '.$token));
+	curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_INFILE, $fp);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($ch, CURLOPT_TIMEOUT, 50);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	$id_vnfd = curl_exec($ch);
+	curl_close($ch);
+	fclose($fp);
+	echo $id_vnfd;
+}
+
+
+
+function createNSinternetFROMpackage()
+{
+	include "jsons.php";
+	
+	$token = $_REQUEST['token'];
+	$name = $_REQUEST['name']; 
+	$vim = $_REQUEST['vim'];
+	$ns_id = $_REQUEST['ns_id'];
+	$instanceType = $_REQUEST['instanceType'];
+
+	$nsd = getNetServInternetPackage($name, $instanceType, $ns_id, $vim);	
+
+	$ch = curl_init(API_MANO_BASE.POST_NS);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8',
+	'Accept: application/json; charset=utf-8', 'Authorization: Bearer '.$token));
+	curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $nsd); 
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($ch, CURLOPT_HEADER, "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)");
+	$id_nsd = curl_exec($ch);
+	$status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+	curl_close($ch);
+	echo $id_nsd;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 function getVimState()
