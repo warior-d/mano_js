@@ -83,8 +83,10 @@
 .forbuttonInternetGeneric {
   font-family: MTSmain;
   font-size: 14px;
-  margin-left: 10px;
+  margin-left: 5px;
 }
+
+.forInputAcl {width: 120px;}
 
 .forbuttonInternet:hover {background-color: rgb(200, 5, 15);}
 .forbuttonInternetGreen:hover {background-color: #004d00;}

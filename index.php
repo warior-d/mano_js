@@ -85,15 +85,16 @@
 								<p style="margin-left:10px; font-family: 'MTSmed'; font-weight: 400; font-size: 14px; color: #626C77; margin-top: 15px; margin-bottom: 15px;" />  Внешние подключения  </p>
 							</td>
 						</tr>
-						
+<!--						
 						<tr>
 							<td height="40px" class="tdright">
 								<div id = "div_internet" class = "punctstest"><p style="margin-left:14px; font-family: 'MTSmed'; font-weight: 400; font-size: 14px; color: #1D2023; margin-top: 2px; margin-bottom: 2px;" /> <img src="images/db.PNG"  valign="middle"> Internet  </p></div> 
 							</td>
 						</tr>					
+-->
 						<tr>
 							<td height="40px" class="tdright">
-								<div id = "div_internet_test" class = "punctstest"><p style="margin-left:14px; font-family: 'MTSmed'; font-weight: 400; font-size: 14px; color: #1D2023; margin-top: 2px; margin-bottom: 2px;" /> <img src="images/db.PNG"  valign="middle"> Internet 2 </p></div> 
+								<div id = "div_internet_test" class = "punctstest"><p style="margin-left:14px; font-family: 'MTSmed'; font-weight: 400; font-size: 14px; color: #1D2023; margin-top: 2px; margin-bottom: 2px;" /> <img src="images/db.PNG"  valign="middle"> Internet </p></div> 
 							</td>
 						</tr>							
 						<tr>

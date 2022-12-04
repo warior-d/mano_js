@@ -2520,7 +2520,7 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 
 	let tbl_all_info = document.createElement('table');
 		tbl_all_info.setAttribute('border', '0');
-		tbl_all_info.setAttribute('width', '570px');
+		tbl_all_info.setAttribute('width', '690px');
 		
 	let tr_all_info_1 = document.createElement('tr');
 		let td_all_info_1 = document.createElement('td');
@@ -2620,7 +2620,7 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 							
 							if(key == 'detailed-status'){
 								let state = JSON.parse(dataPFstatus[key])
-								if(state['dst_port'] == null && state['trans_addr'] == null && state['trans_port'] == null){
+								if(state['dst_port'] == null /*&& state['trans_addr'] == null && state['trans_port'] == null*/){
 									state_port_forwarding = false;
 								}
 								else{
@@ -2748,7 +2748,7 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 										},
 									success: function(delpf) 
 										{
-											alert('Задание на удаление отправлено!');
+											alert('Задание на удаление Port Forwarding отправлено!');
 											location.reload();
 										}
 								});
@@ -2771,10 +2771,239 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 
 		
 // ##### Наполняем ACL	
-		
-		
-		
 
+	$.ajax({
+	type:"POST",
+	url: "./core/engine.php",
+	dataType: "json",
+	data: {
+		action: "sendNSactionGETacl",
+		token: token,
+		ns_id: ns_id
+		},
+	success: function(dataACL) 
+		{
+			console.log(dataACL);
+			let lcm_id_acl = dataACL['id'];
+			console.log('acl - '+lcm_id_acl);
+
+			(function getLCMstatusACL(){
+
+			let flag = 0;
+			  $.ajax({
+				url: './core/engine.php', 
+				dataType: "json",
+				data: {
+					action: "sendLCMoperationState",
+					token: token,
+					lcm_id: lcm_id_acl
+				},							
+				success: function(data) 
+				{
+				  for(key in data){
+					  
+					if(key == 'operationState'){
+						if(data[key] != 'COMPLETED'){
+							flag = flag + 1;
+						}
+					}
+				  }
+				},
+				complete: function(dataACLcomplete) {
+					if(flag == 0){
+						
+						//"src_addr\": null, \"dst_addr\": null, \"proto\": null, \"src_port\": null, \"dst_port\": null}"
+						
+						let dataACLstatus = dataACLcomplete['responseJSON'];
+						let state_ACL = true;
+
+						
+						var header_acl_values = {
+							"src_addr": '',
+							"dst_addr": '',
+							"proto": '',
+							"src_port": '',
+							"dst_port": ''
+						}
+						
+						for(key in dataACLstatus){
+							
+							if(key == 'detailed-status'){
+								let state = JSON.parse(dataACLstatus[key]);
+								console.log(state);
+								if(state['src_addr'] == null /*&& state['trans_addr'] == null && state['trans_port'] == null*/){
+									state_ACL = false;
+								}
+								else{
+									header_acl_values['src_addr'] = state['src_addr'];
+									header_acl_values['dst_addr'] = state['dst_addr'];
+									header_acl_values['proto'] = state['proto'];
+									header_acl_values['src_port'] = state['src_port'];
+									header_acl_values['dst_port'] = state['dst_port'];
+								}
+							}
+							
+						}						
+						
+						console.log(header_acl_values);
+						console.log('state_ACL '+state_ACL);
+						
+						
+						td_all_info_4.innerHTML = '';
+						
+						var header_acl_params = {
+							"src_addr": "Source address",
+							"dst_addr": "Destination address",
+							"proto": "Protocol",
+							"src_port": "Source port",
+							"dst_port": "Detination port"
+						};						
+						
+						
+						var rows = 3;
+					
+						let tbl_acl = document.createElement('table');
+							tbl_acl.setAttribute('border', '0');	
+
+						for(let i = 0; i < rows; i++){
+							
+							let _tr = document.createElement('tr'); //tr +
+							
+							for (key in header_acl_params){
+								let _td = document.createElement('td');
+								_td.setAttribute('align', 'center');
+								
+								if(i == 0){
+									_td.innerHTML = header_acl_params[key];
+									_td.classList.add('headerSettingsTable');
+								}
+								
+								if(i == 1){
+									if(key == 'proto'){
+										let select_proto = document.createElement('select');
+										select_proto.id = 'SETTING_ACL_PROTO';
+										select_proto.classList.add('forInputAcl');
+										let option_tcp = document.createElement('option');
+										option_tcp.innerHTML = 'tcp';
+										select_proto.appendChild(option_tcp);
+										let option_icmp = document.createElement('option');
+										option_icmp.innerHTML = 'icmp';										
+										select_proto.appendChild(option_icmp);
+										if(state_ACL == true){
+											select_proto.value = header_acl_values[key];
+											select_proto.disabled = true;
+										}
+										_td.appendChild(select_proto);
+									}
+									else{
+										_input = document.createElement('input');
+										_input.id = 'SETTINGS_ACL_'+key;
+										_input.classList.add('forInputAcl');
+										_td.classList.add('headerSettingsTable');
+										if(state_ACL == true){
+											_input.value = header_acl_values[key];
+											_input.disabled = true;
+										}
+										_td.appendChild(_input);
+									}
+								}								
+
+								if(i == 2 && (key == "dst_port")){
+									_buttonAPPLYpf = document.createElement('button');
+									_buttonAPPLYpf.innerHTML = "Apply";
+									_buttonAPPLYpf.classList.add('forbuttonInternetGeneric');
+									_buttonAPPLYpf.id = 'APPLY_ACL';
+									if(state_ACL == true){
+										_buttonAPPLYpf.disabled = true;
+									}
+									_buttonDELETEpf = document.createElement('button');
+									_buttonDELETEpf.innerHTML = "Delete";
+									_buttonDELETEpf.classList.add('forbuttonInternetGeneric');
+									_buttonDELETEpf.id = 'DELETE_ACL';
+									if(state_ACL == false){
+										_buttonDELETEpf.disabled = true;
+									}
+									_td.appendChild(_buttonAPPLYpf);
+									_td.appendChild(_buttonDELETEpf);
+								}	
+
+								_tr.appendChild(_td);
+								
+							}
+							
+							tbl_acl.appendChild(_tr);	
+							
+						}
+						td_all_info_4.appendChild(tbl_acl);						
+						
+						
+					$('button').click(function()
+					{
+						
+						var clickId = $(this).attr('id');
+						if(clickId != undefined){
+
+							if(clickId.indexOf("APPLY_ACL") >= 0){
+								
+								let src_addr = $('#SETTINGS_ACL_src_addr').val();
+								let dst_addr = $('#SETTINGS_ACL_dst_addr').val();
+								let proto = $('#SETTING_ACL_PROTO').val();
+								let src_port = $('#SETTINGS_ACL_src_port').val();
+								let dst_port = $('#SETTINGS_ACL_dst_port').val();
+								
+								$.ajax({
+									type:"POST",
+									url: "./core/engine.php",
+									dataType: "json",
+									data: {
+										action: "addACL",
+										token: token,
+										ns_id: ns_id,
+										src_addr: src_addr,
+										dst_addr: dst_addr,
+										proto: proto,
+										src_port: src_port,
+										dst_port: dst_port
+										},
+									success: function(acl_add)
+										{
+											alert('Задание на добавление ACL отправлено!');
+											location.reload();											
+										}
+								});
+							}
+							
+							if(clickId.indexOf("DELETE_ACL") >= 0){
+								
+								$.ajax({
+									type:"POST",
+									url: "./core/engine.php",
+									dataType: "json",
+									data: {
+										action: "delACL",
+										token: token,
+										ns_id: ns_id
+										},
+									success: function(acl_del) 
+										{
+											alert('Задание на удаление ACL отправлено!');
+											location.reload();
+										}
+								});
+							}							
+						}
+					});								
+						
+						
+						
+						return;
+					}
+					setTimeout(getLCMstatusACL, 1000);
+				}
+			  });
+			})();
+		}
+	});
 
 
 

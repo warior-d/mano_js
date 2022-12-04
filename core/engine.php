@@ -29,6 +29,133 @@ define('GET_LCM_STATUS', '/nslcm/v1/ns_lcm_op_occs/');
 
 
 
+function delACL()
+{
+	include "jsons.php";
+	
+	$token = $_REQUEST['token'];
+	$ns_id = $_REQUEST['ns_id']; 
+
+
+	$nsd = delACLJSON();	
+
+	$formatACTIONurl = sprintf(SEND_VNF_ACTION, $ns_id);
+	
+
+	$ch = curl_init(API_MANO_BASE.$formatACTIONurl);
+
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8',
+	'Accept: application/json; charset=utf-8', 'Authorization: Bearer '.$token));
+	curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $nsd); 
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($ch, CURLOPT_HEADER, "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)");
+	$id_nsd = curl_exec($ch);
+	$status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+	curl_close($ch);
+
+
+	echo $id_nsd;
+}
+
+
+
+
+
+
+
+
+
+
+
+function addACL()
+{
+	include "jsons.php";
+	
+	$token = $_REQUEST['token'];
+	$ns_id = $_REQUEST['ns_id'];
+	
+	$src_addr = $_REQUEST['src_addr'];
+	$dst_addr = $_REQUEST['dst_addr'];
+	$proto = $_REQUEST['proto'];
+	$src_port = $_REQUEST['src_port'];
+	$dst_port = $_REQUEST['dst_port'];
+
+
+	$nsd = addACLJSON($src_addr, $dst_addr, $proto, $src_port, $dst_port);	
+
+	$formatACTIONurl = sprintf(SEND_VNF_ACTION, $ns_id);
+	
+
+	$ch = curl_init(API_MANO_BASE.$formatACTIONurl);
+
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8',
+	'Accept: application/json; charset=utf-8', 'Authorization: Bearer '.$token));
+	curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $nsd); 
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($ch, CURLOPT_HEADER, "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)");
+	$id_nsd = curl_exec($ch);
+	$status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+	curl_close($ch);
+
+
+	echo $id_nsd;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function sendNSactionGETacl()
+{
+	include "jsons.php";
+	
+	$token = $_REQUEST['token'];
+	$ns_id = $_REQUEST['ns_id']; 
+
+
+	$nsd = getInfoACL();	
+
+	$formatACTIONurl = sprintf(SEND_VNF_ACTION, $ns_id);
+	
+
+	$ch = curl_init(API_MANO_BASE.$formatACTIONurl);
+
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8',
+	'Accept: application/json; charset=utf-8', 'Authorization: Bearer '.$token));
+	curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $nsd); 
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($ch, CURLOPT_HEADER, "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)");
+	$id_nsd = curl_exec($ch);
+	$status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+	curl_close($ch);
+
+
+	echo $id_nsd;
+}
+
+
+
+
+
 function addPortForwarding()
 {
 	include "jsons.php";

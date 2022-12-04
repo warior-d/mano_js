@@ -1,6 +1,69 @@
 <?php
 
 
+function addACLJSON($src_addr, $dst_addr, $proto, $src_port, $dst_port){
+
+$newNS = 
+<<<NS
+{
+  "primitive": "add_acl",
+  "primitive_params": {
+    "src_addr": "$src_addr",
+    "dst_addr": "$dst_addr",
+    "proto": "$proto",
+    "src_port": "$src_port",
+    "dst_port": "$dst_port"
+  },
+  "member_vnf_index": "vyos-1"
+}
+NS;
+
+return $newNS;
+}
+
+
+function delACLJSON(){
+
+$newNS = 
+<<<NS
+{
+  "primitive": "del_acl",
+  "primitive_params": {},
+  "member_vnf_index": "vyos-1"
+}
+NS;
+
+return $newNS;
+}
+
+
+function getInfoACL(){
+
+$newNS = 
+<<<NS
+{
+  "primitive": "get_acl",
+  "primitive_params": {},
+  "member_vnf_index": "vyos-1"
+}
+NS;
+
+return $newNS;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 function addPortForwardingJSON($dst_port, $trans_addr , $trans_port)
