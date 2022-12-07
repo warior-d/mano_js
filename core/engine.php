@@ -947,9 +947,8 @@ $cld =
 <<<LL
 #cloud-config
 password: $pass
-chpasswd:
-    expire: false
-ssh_pwauth: false
+ssh_pwauth: True
+chpasswd: { expire: False }
 LL;
 
 	$cloud_config = json_encode($cld);

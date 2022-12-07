@@ -1771,6 +1771,8 @@ function generateDivCompute(div_id, head, token)
 														},
 													success: function(data) 
 														{
+															let key_storage = 'STORAGE_' + vimName;
+															localStorage.setItem(key_storage, qntStorage);
 															console.log(data);
 															getInstances(token);
 														}
@@ -1998,7 +2000,7 @@ function getInstances(token){
 							})();							
 						}
 			    ///////////////////////////////////    удалить инстанс!!!!
-				
+						console.log(vim_items);
 						$('img').click(function()
 						{
 							
@@ -2009,6 +2011,8 @@ function getInstances(token){
 								if(clickId.indexOf("TRASH") >= 0){
 									//TODO: возможная бага. Несколько раз может вызываться так как таких ID>1!!!
 									ns_id_id = this.id;
+									
+									
 									
 									ns_id = ns_id_id.replace('TRASH_IMG_', '');
 
@@ -2186,10 +2190,11 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 		"Openstack_EAAS": "admin|devstack",
 		"openstack_WORK": "admin|labstack",
 		"openstack_EAAS": "admin|devstack",
-		"EDGE_ONE": "admin|labstack",
+		"EDGE_TWO": "admin|labstack",
 		"EDGE_1": "admin|labstack",
 		"EDGE_2": "admin|devstack",
-		"EDGE_TWO": "admin|devstack",
+		"EDGE_ONE": "admin|devstack",
+		"EDGE_THREE": "admin|labstack"
 	}
 		
 
@@ -2521,6 +2526,7 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 	let tbl_all_info = document.createElement('table');
 		tbl_all_info.setAttribute('border', '0');
 		tbl_all_info.setAttribute('width', '690px');
+		tbl_all_info.setAttribute('align', 'left');
 		
 	let tr_all_info_1 = document.createElement('tr');
 		let td_all_info_1 = document.createElement('td');
@@ -2532,10 +2538,10 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 	let tr_all_info_2 = document.createElement('tr');
 		let td_all_info_2 = document.createElement('td');
 		td_all_info_2.id = 'TD_PF';
-		td_all_info_2.setAttribute('align', 'center');
+		//td_all_info_2.setAttribute('align', 'center');
 		td_all_info_2.setAttribute('height', '90px');
 		td_all_info_2.setAttribute('valign', 'middle');
-		td_all_info_2.innerHTML = "<img src='../images/preloader_info_inet.gif'/>";
+		td_all_info_2.innerHTML = "<img src='../images/preloader_info_inet.gif' style='margin-left: 280px;'/>";
 	tr_all_info_2.appendChild(td_all_info_2);
 	tbl_all_info.appendChild(tr_all_info_2);
 	
@@ -2551,10 +2557,10 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 	let tr_all_info_4 = document.createElement('tr');
 		let td_all_info_4 = document.createElement('td');
 		td_all_info_4.id = 'TD_ACL';
-		td_all_info_4.setAttribute('align', 'center');
+		//td_all_info_4.setAttribute('align', 'center');
 		td_all_info_4.setAttribute('height', '90px');
 		td_all_info_4.setAttribute('valign', 'middle');
-		td_all_info_4.innerHTML = "<img src='../images/preloader_info_inet.gif'/>";
+		td_all_info_4.innerHTML = "<img src='../images/preloader_info_inet.gif' style='margin-left: 280px;'/>";
 	tr_all_info_4.appendChild(td_all_info_4);
 	tbl_all_info.appendChild(tr_all_info_4);
 
@@ -2662,6 +2668,9 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 								if(i == 1){
 									_input = document.createElement('input');
 									_input.id = 'SETTINGS_PF_'+key;
+									if(key == 'dst_port' || key == 'trans_port'){
+										_input.classList.add('forInputPort');
+									}
 									_td.classList.add('headerSettingsTable');
 									if(state_port_forwarding == true){
 										_input.value = header_pf_values[key];
@@ -2930,7 +2939,13 @@ function generateInfoInstance(div_id, ns_id, vnfrs, vims_accounts, dataInstances
 									else{
 										_input = document.createElement('input');
 										_input.id = 'SETTINGS_ACL_'+key;
-										_input.classList.add('forInputAcl');
+										if(key == 'src_port' || key == 'dst_port'){
+											_input.classList.add('forInputPort');
+										}
+										else{
+											_input.classList.add('forInputAcl');
+										}
+										
 										_td.classList.add('headerSettingsTable');
 										if(state_ACL == true){
 											_input.value = header_acl_values[key];
@@ -3120,7 +3135,7 @@ else{
 		"datacenter_name": "Сайт EDGE",
 		"vim_type": "Тип EDGE",
 		"nsState": "Статус",
-		"create-time": "Дата создания",
+		"create-time": "Время создания",
 		"revision": "Действия"
 	};
 	
@@ -3165,7 +3180,7 @@ else{
 
 				if(key == 'create-time'){
 					var date = new Date(tdData * 1000);
-					tdData = formatDate(date);
+					tdData = formatDateWithHoursMin(date);
 				}
 				else if(key == 'nsState'){
 					
@@ -3333,6 +3348,26 @@ else{
 
 
 			let _tr_storage = document.createElement('tr');
+
+// ## Добавим storage_compute
+
+				let additing_storage = 0;
+				
+				for(let y = 0; y < localStorage.length; y++) {
+					
+					let key = localStorage.key(y);
+					
+					if(key.indexOf("STORAGE_") >= 0){
+						
+						let current_vim_name = key.replace("STORAGE_", '');
+						
+						if(current_vim_name == vim_accounts[i]["name"]){
+							
+							additing_storage = parseInt(localStorage.getItem(key));
+							
+						}
+					}
+				}
 				
 				let td_sto_name = document.createElement('td');
 				td_sto_name.innerHTML = 'storage';
@@ -3341,13 +3376,15 @@ else{
 				let td_sto_attr = document.createElement('td');
 				let curSto = vim_accounts[i]["resources"]["storage"]["storage"]["used"];
 				let allSto = vim_accounts[i]["resources"]["storage"]["storage"]["total"];
-				let percentStor = (curSto/allSto)*100;
+				let all_storage = curSto + additing_storage;
+				console.log(additing_storage);
+				let percentStor = (all_storage/allSto)*100;
 				//td_sto_attr.setAttribute('valign', 'middle');
 				td_sto_attr.innerHTML = '<div id="container" style="width:120px; height:15px; border:1px solid #003300; border-radius: 3px; "><div id="progress-bar" style="width:'+percentStor+'%; background-image: repeating-linear-gradient(60deg, #00e600 0, #00e600 5px, #00cc00 5px, #00cc00 10px); height:100%; text-align: center; "></div></div>';
 				td_sto_attr.classList.add('tdMainDivReso');
 
 				let td_sto_txt = document.createElement('td');
-				td_sto_txt.innerHTML = '[' + curSto + ' из ' + allSto + 'GB]';
+				td_sto_txt.innerHTML = '[' + all_storage + ' из ' + allSto + 'GB]';
 				td_sto_txt.classList.add('tdMainDivReso_');
 
 				

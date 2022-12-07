@@ -104,7 +104,7 @@
 .tdMainDivReso_ {font-family: 'MTSmain'; font-size: 13px; border-bottom: 3px solid #f0f0f0; padding-bottom: 5px }
 .forProgressBar {background-color: rgb(200, 5, 15);}
 
-
+.forInputPort {width: 48px;}
 
 .wsdbTableP {font-family: 'MTSmain'; font-size: 14px; color: #626C77;}
 .divBottomMargin {margin-bottom: 20px;}
@@ -118,7 +118,7 @@
 .pWSdiv1 {font-family: 'MTSmain'; font-size: 14px; color: #626C77; text-align: center;}
 
 .headerMainDiv {font-family: 'MTSmed'; font-size: 24px; color: #1D2023; text-align: left; }
-.settingsMainDiv {font-family: 'MTSmain'; font-size: 18px; color: #1D2023; text-align: center; }
+.settingsMainDiv {font-family: 'MTSmain'; font-size: 18px; color: #1D2023; text-align: left; }
 .headerSettingsTable {font-family: 'MTSmed'; font-size: 14px; color: #626C77; border-bottom: 3px solid #f0f0f0; text-align: center; }
 
 .headerInfoTable {font-family: 'MTSmed'; font-size: 14px; color: #626C77; border-bottom: 3px solid #f0f0f0; text-align: left; }

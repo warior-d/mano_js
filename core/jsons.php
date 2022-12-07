@@ -520,12 +520,12 @@ $newVNFd =
 				"name": "Ubuntu 18.04"
 			},
 			{
-				"id": "ws_image",
+				"id": "$imageWS",
 				"image": "$imageWS",
 				"name": "$imageWS"
 			},
 			{
-				"id": "db_image",
+				"id": "$imageDB",
 				"image": "$imageDB",
 				"name": "$imageDB"
 			}
@@ -549,10 +549,15 @@ $newVNFd =
 					}
 				],
 				"name": "ws_vm",
-				"sw-image-desc": "ws_image",
+				"sw-image-desc": "$imageWS",
 				"virtual-compute-desc": "compute_vm_ws",
 				"virtual-storage-desc": "storage_vm_ws",
 				"monitoring-parameter": [
+					{
+						"id": "cpu_util_ws_vm",
+						"name": "vnf_cpu_util_ws_vm",
+						"performance-metric": "cpu_utilization"
+					},
 					{
 						"id": "packets_sent_ws",
 						"name": "vnf_packets_sent_ws",
@@ -586,10 +591,15 @@ $newVNFd =
 					}
 				],
 				"name": "db_vm",
-				"sw-image-desc": "db_image",
+				"sw-image-desc": "$imageDB",
 				"virtual-compute-desc": "compute_vm_db",
 				"virtual-storage-desc": "storage_vm_db",
 				"monitoring-parameter": [
+					{
+						"id": "cpu_util_db_vm",
+						"name": "vnf_cpu_util_db_vm",
+						"performance-metric": "cpu_utilization"
+					},					
 					{
 						"id": "packets_sent_db",
 						"name": "vnf_packets_sent_db",
@@ -631,16 +641,20 @@ $newVNFd =
 		"virtual-storage-desc": [
 			{
 				"id": "storage_vm_ws",
+				"type-of-storage": "persistent-storage",
 				"size-of-storage": "$storageWS"
 			},
 			{
 				"id": "storage_vm_db",
+				"type-of-storage": "persistent-storage",
 				"size-of-storage": "$storageDB"
 			}
 		]
 	}
 }
 VNFd;
+
+### 				"type-of-storage": "persistent-storage",
 
 return $newVNFd;
 
@@ -797,6 +811,9 @@ $newVNFd =
 		"vdu": [
 		  {
 			"id": "ubuntu_VM",
+			"supplemental-boot-data": {
+                "boot-data-drive": true
+			},
 			"cloud-init": $cloud_config,
 			"int-cpd": [
 			  {
@@ -813,10 +830,6 @@ $newVNFd =
 			],
 			"name": "ubuntu_VM",
 			"sw-image-desc": "$image",
-			"virtual-compute-desc": "ubuntu_VM_compute",
-			"virtual-storage-desc": [
-			  "ubuntu_VM_storage"
-			],
 			"monitoring-parameter": [
 			  {
 				"id": "cpu_util",
@@ -838,6 +851,10 @@ $newVNFd =
 				"name": "vnf_pack_receive",
 				"performance-metric": "packets_received"
 			  }
+			],
+			"virtual-compute-desc": "ubuntu_VM_compute",
+			"virtual-storage-desc": [
+			  "ubuntu_VM_storage"
 			]
 		  }
 		],
@@ -861,6 +878,8 @@ $newVNFd =
 	}
 }
 VNFd;
+
+#### "type-of-storage": "persistent-storage",
 
 return $newVNFd;
 
