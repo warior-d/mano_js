@@ -1447,8 +1447,8 @@ function createCompute(token){
 	services = {
 		"name": "Имя инстанса",
 		"image": "Образ операционной системы",
-		"RAM": "Оперативная память, Gb",
 		"vCPU": "Количество vCPU",
+		"RAM": "Оперативная память, Gb",
 		"storage": "Место на диске, Gb",
 		"network": "Сеть",
 		"VIM": "Сайт EDGE",
@@ -1570,37 +1570,30 @@ function generateDivCompute(div_id, head, token)
 			name_div3.appendChild(select_image);
 
 			let name_div5 = document.getElementById('DIV5');
-			let select_ram = document.createElement('select');
-			select_ram.id = 'select_ram';
-			select_ram.classList.add('selectStyle');
-			let ram1 = document.createElement('option');
-			let ram2 = document.createElement('option');
-			let ram4 = document.createElement('option');
-			let ram5 = document.createElement('option');
-			ram1.innerHTML = '1';
-			ram2.innerHTML = '2';
-			ram4.innerHTML = '4';
-			ram5.innerHTML = '5';
-			select_ram.appendChild(ram1);
-			select_ram.appendChild(ram2);
-			select_ram.appendChild(ram4);
-			select_ram.appendChild(ram5);
-			name_div5.appendChild(select_ram);	
-
-			let name_div7 = document.getElementById('DIV7');
 			let select_vcpu = document.createElement('select');
 			select_vcpu.id = 'select_vcpu';
 			select_vcpu.classList.add('selectStyle');
-			let vcpu1 = document.createElement('option');
-			let vcpu2 = document.createElement('option');
-			let vcpu4 = document.createElement('option');
-			vcpu1.innerHTML = '1';
-			vcpu2.innerHTML = '2';
-			vcpu4.innerHTML = '4';
-			select_vcpu.appendChild(vcpu1);
-			select_vcpu.appendChild(vcpu2);
-			select_vcpu.appendChild(vcpu4);
-			name_div7.appendChild(select_vcpu);	
+			let cpu_vals = ["1","2","3","4"];
+			for (let cpu of cpu_vals) {
+				let _cpu = document.createElement('option');
+				_cpu.innerHTML = cpu;
+				select_vcpu.appendChild(_cpu);
+			}
+			name_div5.appendChild(select_vcpu);	
+
+			let name_div7 = document.getElementById('DIV7');
+			let select_ram = document.createElement('select');
+			select_ram.id = 'select_ram';
+			select_ram.classList.add('selectStyle');
+			let rams_vals = ["1","2","4","8"];
+			for (let ram of rams_vals) {
+				let _ram = document.createElement('option');
+				_ram.innerHTML = ram;
+				select_ram.appendChild(_ram);
+			}
+			name_div7.appendChild(select_ram);	
+
+
 
 			let name_div9 = document.getElementById('DIV9');
 			let select_stor = document.createElement('select');
@@ -2000,7 +1993,7 @@ function getInstances(token){
 							})();							
 						}
 			    ///////////////////////////////////    удалить инстанс!!!!
-						console.log(vim_items);
+
 						$('img').click(function()
 						{
 							
@@ -2010,9 +2003,7 @@ function getInstances(token){
 
 								if(clickId.indexOf("TRASH") >= 0){
 									//TODO: возможная бага. Несколько раз может вызываться так как таких ID>1!!!
-									ns_id_id = this.id;
-									
-									
+									ns_id_id = this.id;							
 									
 									ns_id = ns_id_id.replace('TRASH_IMG_', '');
 
@@ -2026,7 +2017,18 @@ function getInstances(token){
 										instance_id: ns_id
 										},
 									success: function(data) 
-										{						
+										{					
+											for(let n = 0; n < dataInstances.length; n++){
+				
+												if(dataInstances[n]['_id'] == ns_id){
+													
+													let key_of_local_storage = 'STORAGE_' + dataInstances[n]['datacenter_name'];
+													console.log(key_of_local_storage);
+													localStorage.removeItem(key_of_local_storage);
+													
+												}
+											}											
+
 											location.reload();
 										}
 									});
@@ -3119,7 +3121,7 @@ if(data.length < 1){
 	
 	
 		let _p = document.createElement('p');
-		_p.innerHTML = "У вас пока нет созданных сервисов. Создайте сервис! :)";
+		_p.innerHTML = "У вас пока нет созданных сервисов.";
 		_p.classList.add('headerMainDiv');
 	parentElem.appendChild(_p);
 	
@@ -3233,16 +3235,22 @@ else{
 				//  #########################################################     РЕСУРСЫ!!!!
 				//
 
-
-
-	//Заголовок Перед таблицей
-	let _p_resources = document.createElement('p');
-	_p_resources.innerHTML = "Ресурсы EDGE";
-	_p_resources.classList.add('headerMainDiv');
-	parentElem.appendChild(_p_resources);
-
-	console.log(vim_accounts);
+	if(vim_accounts.length == 0){
+		let _p0 = document.createElement('p');
+		_p0.innerHTML = "У вас пока нет добавленых EDGE. Добавьте EDGE! :)";
+		_p0.classList.add('headerMainDiv');
+	parentElem.appendChild(_p0);
 	
+	}
+	else{
+		//Заголовок Перед таблицей
+		let _p_resources = document.createElement('p');
+		_p_resources.innerHTML = "Ресурсы EDGE";
+		_p_resources.classList.add('headerMainDiv');
+		parentElem.appendChild(_p_resources);		
+	}
+
+
 	
 	for (var i = 0; i < vim_accounts.length; i++){
 		if(vim_accounts[i]["vim_type"] != 'openstack'){
