@@ -429,6 +429,7 @@ function createEDGE(token){
 		"vim_user": "Имя пользователя VIM",
 		"vim_password": "Пароль VIM",
 		"vim_type": "Тип VIM",
+		"config_vim": "Конфигурация",
 	};
 	
 	generateDivEDGE("main_div", services, token);
@@ -535,6 +536,15 @@ function generateDivEDGE(div_id, head, token)
 			select_vim_type.appendChild(option_vim_type5);			
 			name_div6.appendChild(select_vim_type);	
 
+
+			let name_div13 = document.getElementById('DIV_EDGE_13');
+			let name_input55 = document.createElement('textarea');
+			name_input55.id = 'config_edge';
+			name_input55.classList.add('inputNameTA');
+			name_div13.appendChild(name_input55);
+
+
+
 			
 			$("#input_name_internet").keyup(function(data)
 			{
@@ -567,9 +577,9 @@ function generateDivEDGE(div_id, head, token)
 				
 				let pass_edge = $('#input_passw_edge').val();
 				
-
+				let config_edge = $('#config_edge').val();
 			
-				
+				console.log(config_edge);
 				
 				if(instanceName != '' && url_edge != '' && tenant_name != ''  && user_edge != '' && pass_edge != ''){
 					
@@ -584,7 +594,8 @@ function generateDivEDGE(div_id, head, token)
 							tenant_name: tenant_name,
 							user_edge: user_edge,
 							pass_edge: pass_edge,
-							token: token
+							token: token,
+							config_edge: config_edge
 							},
 						success: function(data) 
 							{
@@ -1030,12 +1041,12 @@ let paramsWS = [{
   "SMALL": {
     "vCPU": "1 core",
     "RAM": "1 GB",
-    "SSD": "5 GB"
+    "SSD": "3 GB"
   },
   "MEDIUM": {
     "vCPU": "2 core",
     "RAM": "2 GB",
-    "SSD": "10 GB"
+    "SSD": "5 GB"
   },
   "LARGE": {
     "vCPU": "3 core",
@@ -1292,12 +1303,12 @@ let paramsDB = [{
 				if(resoursesWS == 'DIV_WS_RWS_1'){
 					vCPUws = '1';
 					RAMws = '1';
-					storagews = '5';
+					storagews = '3';
 				}
 				else if(resoursesWS == 'DIV_WS_RWS_2'){
 					vCPUws = '2';
 					RAMws = '2';
-					storagews = '10';
+					storagews = '5';
 				}					
 				else if(resoursesWS == 'DIV_WS_RWS_3'){
 					vCPUws = '3';
@@ -1396,6 +1407,10 @@ let paramsDB = [{
 														{
 															console.log(data);
 															getInstances(token);
+															let key_storage = 'STORAGE_' + vimName;
+															let addval = parseInt(storagedb) + parseInt(storagews);
+															localStorage.setItem(key_storage, addval);
+															
 														}
 												});
 												

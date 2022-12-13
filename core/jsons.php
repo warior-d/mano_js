@@ -162,8 +162,10 @@ return $newNS;
 
 
 
-function getEDGE($name, $url_edge, $tenant_name, $user_edge, $pass_edge){
+function getEDGE($name, $url_edge, $tenant_name, $user_edge, $pass_edge, $config_edge = ''){
 	
+$config = json_decode($config_edge);
+
 $edge = 
 <<<EDGE
 {
@@ -174,7 +176,7 @@ $edge =
   "vim_user": "$user_edge",
   "vim_password": "$pass_edge",
   "config": {
-    "security_groups": "default"
+    $config
   }
 }
 EDGE;
@@ -641,12 +643,10 @@ $newVNFd =
 		"virtual-storage-desc": [
 			{
 				"id": "storage_vm_ws",
-				"type-of-storage": "persistent-storage",
 				"size-of-storage": "$storageWS"
 			},
 			{
 				"id": "storage_vm_db",
-				"type-of-storage": "persistent-storage",
 				"size-of-storage": "$storageDB"
 			}
 		]

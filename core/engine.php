@@ -426,6 +426,7 @@ function getVimState()
 							$new_arr = [];
 							$new_arr["_id"] = $decoded_json_vim[$i]["_id"];
 							$new_arr["ram_state"] = $decoded_json_vim[$i]['resources']['compute']['ram']['total'];
+							$new_arr["operationalState"] = $decoded_json_vim[$i]['_admin']['operationalState'];
 							array_push($new_obj, $new_arr);
 						}
 					}
@@ -479,10 +480,9 @@ function createEDGE()
 	$tenant_name = $_REQUEST['tenant_name'];
 	$user_edge = $_REQUEST['user_edge'];
 	$pass_edge = $_REQUEST['pass_edge'];
+	$config_edge = json_encode($_REQUEST['config_edge']);
 
-	$nsd = getEDGE($name, $url_edge, $tenant_name, $user_edge, $pass_edge);	
-
-	//print_r($nsd);
+	$nsd = getEDGE($name, $url_edge, $tenant_name, $user_edge, $pass_edge, $config_edge);
 
 	$ch = curl_init(API_MANO_BASE.CREATE_VIM);
 	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8',
